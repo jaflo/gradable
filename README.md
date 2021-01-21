@@ -11,7 +11,7 @@ Gradable makes grading websites easy. Made for the _CS 329E: Elements of Web Pro
 
 ## Usage
 
-You will need to copy a script to your university web space and install a browser extension. Open this page and follow the instructions.
+You will need to copy a script to your university web space and install a browser extension. Open [the hosted webpage](https://projects.loud.red/gradable/) and follow the instructions there.
 
 ## CI setup
 
