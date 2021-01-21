@@ -76,7 +76,7 @@
 						{#if request.daysLate > 0}
 							<div class="latebadge">{request.daysLate}</div>
 						{/if}
-						{new Date(request.lastModified).toString()}
+						{new Date(request.lastModified).toLocaleString()}
 					</td>
 				{:else}
 					<td>

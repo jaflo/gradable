@@ -2,6 +2,8 @@
 
 Gradable makes grading websites easy. Made for the _CS 329E: Elements of Web Programming_ course at The University of Texas at Austin.
 
+![Screenshot of grading interface](extension/screenshot.png?raw=true)
+
 ## Features
 
 -   Faster grading of assignments by reusing previous comments

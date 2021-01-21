@@ -1,4 +1,4 @@
 /node_modules/
 /public/build/
-
+/extension/extension.zip
 .DS_Store
