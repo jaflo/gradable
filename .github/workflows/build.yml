@@ -1,0 +1,21 @@
+env: {}
+
+name: Build website
+on:
+  push:
+    branches: [ master ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm install
+      - run: npm build
+      - uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          FOLDER: public # copy this...
+          REPOSITORY_NAME: jaflo/microsites
+          BRANCH: master
+          TARGET_FOLDER: gradable # ...here
+          CLEAN: true
