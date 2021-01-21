@@ -13,7 +13,7 @@ jobs:
       - run: npm build
       - uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          SSH: true
           FOLDER: public # copy this...
           REPOSITORY_NAME: jaflo/microsites
           BRANCH: master
