@@ -2,7 +2,7 @@
 	"name": "Gradable Companion",
 	"version": "0.0.1",
 	"description": "Companion extension for Gradable",
-	"homepage_url": "https://github.com/awesome-templates/browser-extension-template",
+	"homepage_url": "https://github.com/jaflo/gradable",
 	"manifest_version": 2,
 	"minimum_chrome_version": "74",
 	"applications": {
