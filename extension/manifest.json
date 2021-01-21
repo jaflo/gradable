@@ -16,7 +16,7 @@
 	},
 	"content_scripts": [
 		{
-			"matches": ["*://localhost/*"],
+			"matches": ["*://localhost/*", "*://projects.loud.red/gradable*"],
 			"js": ["link.js"]
 		},
 		{
@@ -30,7 +30,8 @@
 		"cookies",
 		"webRequest",
 		"*://*.cs.utexas.edu/*",
-		"*://localhost/*"
+		"*://localhost/*",
+		"*://projects.loud.red/gradable*"
 	],
 	"background": {
 		"persistent": true,

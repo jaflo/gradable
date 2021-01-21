@@ -11,8 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 20
       - name: install
         run: npm install
       - uses: fregante/daily-version-action@v1
