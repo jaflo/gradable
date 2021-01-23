@@ -61,8 +61,15 @@ jobs:
           FILENAME=$(ls extension/web-ext-artifacts)
           echo "::set-output name=ext_file::$FILENAME"
         id: find
-      - uses: actions/upload-release-asset@v1
-        id: upload-release-asset
+      - name: Update Firefox update manifest
+        run: |
+          wget https://github.com/${{ github.repository }}/releases/latest/download/firefox-updates.json
+          echo "`jq '.addons[].updates += [{\"version\": \"${{
+          needs.version.outputs.version }}\", \"update_link\": \"https://github.com/${{
+          github.repository }}/releases/download/${{ needs.version.outputs.version
+          }}/firefox-extension.xpi\"}]' firefox-updates.json`" > firefox-updates.json
+      - name: Upload XPI
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -70,3 +77,12 @@ jobs:
           asset_path: ./extension/web-ext-artifacts/${{ steps.find.outputs.ext_file }}
           asset_name: firefox-extension.xpi
           asset_content_type: application/x-xpinstall
+      - name: Upload update manifest
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./firefox-updates.json
+          asset_name: firefox-updates.json
+          asset_content_type: application/json

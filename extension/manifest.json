@@ -8,7 +8,8 @@
 	"applications": {
 		"gecko": {
 			"id": "gradable@loud.red",
-			"strict_min_version": "67.0"
+			"strict_min_version": "67.0",
+			"update_url": "https://github.com/jaflo/gradable/releases/latest/download/firefox-updates.json"
 		}
 	},
 	"icons": {

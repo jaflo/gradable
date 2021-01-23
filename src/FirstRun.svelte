@@ -36,7 +36,7 @@
 
 {#if !pluginInstalled}
 	Install the companion browser extension for
-	<a href="https://addons.mozilla.org/en-US/firefox/addon/gradable-companion/"
+	<a href="https://github.com/jaflo/gradable/releases/latest/download/firefox-extension.xpi"
 		>Firefox</a
 	>
 	or
