@@ -47,15 +47,6 @@ jobs:
         env:
           WEB_EXT_API_KEY: '${{ secrets.WEB_EXT_API_KEY }}'
           WEB_EXT_API_SECRET: '${{ secrets.WEB_EXT_API_SECRET }}'
-      - uses: actions/create-release@v1
-        id: create_release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ needs.version.outputs.version }}
-          release_name: Firefox extension v${{ needs.version.outputs.version }}
-          draft: false
-          prerelease: false
       - name: Find signed extension
         run: |
           FILENAME=$(ls extension/web-ext-artifacts)
@@ -68,6 +59,16 @@ jobs:
           needs.version.outputs.version }}\", \"update_link\": \"https://github.com/${{
           github.repository }}/releases/download/${{ needs.version.outputs.version
           }}/firefox-extension.xpi\"}]' firefox-updates.json`" > firefox-updates.json
+      - name: Create release
+        uses: actions/create-release@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ needs.version.outputs.version }}
+          release_name: Firefox extension v${{ needs.version.outputs.version }}
+          draft: false
+          prerelease: false
       - name: Upload XPI
         uses: actions/upload-release-asset@v1
         env:
