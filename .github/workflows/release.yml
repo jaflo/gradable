@@ -56,12 +56,17 @@ jobs:
           release_name: Firefox extension v${{ needs.version.outputs.version }}
           draft: false
           prerelease: false
+      - name: Find signed extension
+        run: |
+          FILENAME=$(ls extension/web-ext-artifacts)
+          echo "::set-output name=ext_file::$FILENAME"
+        id: find
       - uses: actions/upload-release-asset@v1
         id: upload-release-asset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./web-ext-artifacts/*.xpi
+          asset_path: ./extension/web-ext-artifacts/${{ steps.find.outputs.ext_file }}
           asset_name: firefox-extension.xpi
           asset_content_type: application/x-xpinstall
