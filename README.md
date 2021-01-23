@@ -23,3 +23,15 @@ The following secrets should be configured in GitHub:
 1. `CLIENT_ID`, `CLIENT_SECRET`, and `REFRESH_TOKEN` from [Google APIs](https://github.com/DrewML/chrome-webstore-upload/blob/master/How%20to%20generate%20Google%20API%20keys.md).
 1. `WEB_EXT_API_KEY`, and `WEB_EXT_API_SECRET` from [AMO](https://addons.mozilla.org/en-US/developers/addon/api/key).
 1. `ACCESS_TOKEN` from [GitHub](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
+
+Before you publish the extensions you will need to set up the listings in the appropriate stores, create at least one tag, and have a release with a file `firefox-updates.json` with contents like:
+
+```json
+{
+	"addons": {
+		"{yourexte-nsio-nid0-from-firefox00000}": {
+			"updates": []
+		}
+	}
+}
+```
