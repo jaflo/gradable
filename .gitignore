@@ -1,4 +1,6 @@
 /node_modules/
 /public/build/
 /extension/extension.zip
+/extension/web-ext-artifacts/
+/extension/.web-extension-id
 .DS_Store

@@ -14,28 +14,57 @@ jobs:
     outputs:
       created: '${{ steps.daily-version.outputs.created }}'
       version: '${{ steps.daily-version.outputs.version }}'
-  submit:
+  chrome:
     needs: version
     if: github.event_name == 'workflow_dispatch' || needs.version.outputs.created
-    strategy:
-      fail-fast: false
-      matrix:
-        command:
-          - firefox
-          - chrome
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - run: npm install
-      - name: Update extension’s meta
+      - name: Update extension version
         run: >-
           npx dot-json extension/manifest.json version ${{
           needs.version.outputs.version }}
-      - run: 'npm run release:${{ matrix.command }}'
+      - run: 'npm run release:chrome'
         env:
           EXTENSION_ID: '${{ secrets.EXTENSION_ID }}'
           CLIENT_ID: '${{ secrets.CLIENT_ID }}'
           CLIENT_SECRET: '${{ secrets.CLIENT_SECRET }}'
           REFRESH_TOKEN: '${{ secrets.REFRESH_TOKEN }}'
+  firefox:
+    needs: version
+    if: github.event_name == 'workflow_dispatch' || needs.version.outputs.created
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm install
+      - name: Update extension version
+        run: >-
+          npx dot-json extension/manifest.json version ${{
+          needs.version.outputs.version }}
+      - name: Sign extension
+        run: |
+          XPI=$(npm run release:firefox | grep -Po "(?=web-ext-artifacts).*(?=xpi)")
+          echo "::set-output name=extension::./$XPIxpi"
+        id: sign
+        env:
           WEB_EXT_API_KEY: '${{ secrets.WEB_EXT_API_KEY }}'
           WEB_EXT_API_SECRET: '${{ secrets.WEB_EXT_API_SECRET }}'
+      - uses: actions/create-release@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ needs.version.outputs.version }}
+          release_name: Firefox extension v${{ needs.version.outputs.version }}
+          draft: false
+          prerelease: false
+      - uses: actions/upload-release-asset@v1
+        id: upload-release-asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ steps.sign.outputs.extension }}
+          asset_name: firefox-extension.xpi
+          asset_content_type: application/x-xpinstall

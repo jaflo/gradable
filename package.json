@@ -7,7 +7,7 @@
 		"start": "sirv public",
 		"validate": "svelte-check",
 		"release:chrome": "cd extension && webstore upload --auto-publish",
-		"release:firefox": "cd extension && web-ext-submit"
+		"release:firefox": "cd extension && web-ext sign"
 	},
 	"devDependencies": {
 		"@rollup/plugin-commonjs": "^17.0.0",
@@ -26,7 +26,7 @@
 		"svelte-preprocess": "^4.0.0",
 		"tslib": "^2.0.0",
 		"typescript": "^3.9.3",
-		"web-ext-submit": "^5.5.0"
+		"web-ext": "^5.5.0"
 	},
 	"dependencies": {
 		"sirv-cli": "^1.0.0",
