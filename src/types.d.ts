@@ -22,7 +22,6 @@ interface HTTPRequest {
 interface Student {
 	username: string;
 	commentIds: number[];
-	submissionTime: string;
 }
 
 interface Checkpoint {
@@ -35,5 +34,11 @@ interface Checkpoint {
 interface ConfigOptions {
 	token: string;
 	endpoint: string;
-	studentIds: string[];
+	students: StudentConfig[];
+}
+
+interface StudentConfig {
+	username: string;
+	password: string;
+	canvasId: string; // unused
 }

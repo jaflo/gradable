@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { loadNextStudent } from "../data/homework";
-	import { homework } from "../stores";
+	import {
+		collectedRequests,
+		fileModificationTimes,
+		homework,
+	} from "../stores";
 
 	let homeworkNumber = "";
 	let dueDate = "";
@@ -33,6 +37,8 @@
 			] as Comment[],
 			prefix,
 		};
+		$collectedRequests = [];
+		$fileModificationTimes = {};
 		loadNextStudent();
 	}
 </script>

@@ -16,15 +16,20 @@
 
 	$: score = calculateScore($student.commentIds, $homework.possibleComments);
 	$: embeddedUrl = `${$homework.prefix}/${$student.username}/`;
-	$: progress = $homework.students.length / $config.studentIds.length;
+	$: progress = $homework.students.length / ($config.students.length + 1);
+
+	let prevUsername = $student.username;
+	$: if (prevUsername !== $student.username) {
+		prevUsername = $student.username;
+		$collectedRequests = [];
+		$fileModificationTimes = {};
+	}
 
 	let iframeRef;
 
 	function continueWithNextStudent() {
 		messageExtension({ type: "clear-cookies" });
 		$homework.students = [...$homework.students, $student];
-		$collectedRequests = [];
-		$fileModificationTimes = {};
 		loadNextStudent();
 	}
 
@@ -44,18 +49,16 @@
 	}
 </script>
 
-<div class="progress">
-	<div style="width:{progress * 100}%" />
-</div>
-
 <div class="wrapper">
 	<div class="sidebar">
 		<h1>Grading homework {$homework.number}</h1>
-		<div>
-			Due <input type="date" bind:value={$homework.dueDate} />
+		<div class="split">
+			<div>
+				Due <input type="date" bind:value={$homework.dueDate} />
+			</div>
 			<button on:click={clearHomework}>Discard all progress</button>
 		</div>
-		<h2>
+		<h2 class="split">
 			<div>
 				<code>{$student.username}</code>
 				({score}%)
@@ -75,21 +78,16 @@
 
 		<StudentJumper />
 
-		<div class="actions">
-			<!-- <button on:click={unlockCurrent} disabled={!getHomeworkFolder(url)}>
-				Unlock {getHomeworkFolder(url) || ""}
-			</button>
-			<button on:click={lockCurrent} disabled={!getHomeworkFolder(url)}>
-				Lock {getHomeworkFolder(url) || ""}
-			</button> -->
-		</div>
-
 		<Requests />
 	</div>
 
 	<div class="browser">
 		<Browser {embeddedUrl} bind:iframeRef />
 	</div>
+</div>
+
+<div class="progress">
+	<div style="width:{progress * 100}%" />
 </div>
 
 <style>
@@ -137,14 +135,15 @@
 	.progress div {
 		background: var(--good-dark);
 		height: 4px;
+		transition: width 0.3s ease-out;
 	}
 
-	h2 {
+	.split {
 		display: flex;
 		margin-bottom: 0;
 	}
 
-	h2 div {
+	.split div {
 		flex: 1;
 	}
 </style>

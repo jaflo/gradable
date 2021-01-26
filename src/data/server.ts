@@ -1,18 +1,28 @@
 const MIN_SERVER_VERSION = 1;
 
-export function lock(url, config: ConfigOptions) {
-	return send(true, url, config);
+export function lock(url, username, config: ConfigOptions) {
+	return send(true, username, url, config);
 }
 
-export function unlock(url, config: ConfigOptions) {
-	return send(false, url, config);
+export function unlock(url, username, config: ConfigOptions) {
+	return send(false, username, url, config);
 }
 
-function send(lock, url, config: ConfigOptions) {
+function send(lock, username, url, config: ConfigOptions) {
+	const password = config.students.find(
+		(student) => student.username === username
+	)?.password;
+
+	if (!password) {
+		throw new Error("Unknown student");
+	}
+
 	const data = new URLSearchParams();
 	data.append("token", config.token);
 	data.append("lock", lock ? "yes" : "no");
 	data.append("url", url);
+	data.append("user", username);
+	data.append("pass", password);
 
 	return fetch(config.endpoint, {
 		method: "post",
@@ -24,6 +34,17 @@ export function pingServer(config: ConfigOptions) {
 	const data = new URLSearchParams();
 	data.append("token", config.token);
 	data.append("ping", "yes");
+
+	return fetch(config.endpoint, {
+		method: "post",
+		body: data,
+	}).then((response) => response.json());
+}
+
+export function removeServerConfig(config: ConfigOptions) {
+	const data = new URLSearchParams();
+	data.append("token", config.token);
+	data.append("remove", "yes");
 
 	return fetch(config.endpoint, {
 		method: "post",

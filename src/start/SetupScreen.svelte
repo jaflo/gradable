@@ -2,6 +2,18 @@
 	import NewSession from "./NewSession.svelte";
 	import RestoreSession from "./RestoreSession.svelte";
 	import { checkpoints, config } from "../stores";
+	import { removeServerConfig } from "../data/server";
+	import StudentConfig from "../shared/StudentConfig.svelte";
+
+	function resetServer() {
+		removeServerConfig($config).then(({ success }) => {
+			if (success) {
+				alert("Server reset, you still need to delete gradable.php");
+			} else {
+				alert("Failed, could not reset");
+			}
+		});
+	}
 
 	function resetEverything() {
 		if (
@@ -13,10 +25,6 @@
 			window.location = window.location;
 		}
 	}
-
-	let studentIdsRaw = $config.studentIds.join("\n");
-
-	$: $config.studentIds = studentIdsRaw.split("\n").filter((id) => !!id);
 </script>
 
 <h1>Grade new homework</h1>
@@ -28,26 +36,17 @@
 {/if}
 
 <h1>Configuration</h1>
-<label>
-	<span>
-		{$config.studentIds.length}
-		{$config.studentIds.length === 1 ? "student" : "students"}
-	</span>
-	<textarea bind:value={studentIdsRaw} />
-</label>
-<div>
-	UT CS server endpoint: {$config.endpoint}
-</div>
 
-If you messed up or want to reset, use this:
-<button on:click={resetEverything}>Delete everything and set up again</button>
+<h2>UT CS server endpoint</h2>
+{$config.endpoint}
+
+<StudentConfig bind:students={$config.students} />
+
+<h2>Reset</h2>
+<button on:click={resetEverything}>Delete local config and set up again</button>
+<button on:click={resetServer}>Reset server configuration</button>
 
 <style>
-	textarea {
-		display: block;
-		margin-top: 0.5em;
-	}
-
 	h1:not(:first-of-type) {
 		margin-top: 1em;
 	}

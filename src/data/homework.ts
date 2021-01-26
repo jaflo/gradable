@@ -8,7 +8,9 @@ homework.subscribe(
 );
 
 export function loadNextStudent() {
-	const studentIds = JSON.parse(localStorage.getItem("config")).studentIds;
+	const studentIds = JSON.parse(localStorage.getItem("config")).students.map(
+		(student) => student.username
+	);
 	const left = studentIds.filter((id) => !gradedStudents.includes(id));
 
 	if (left.length > 0) {
@@ -17,7 +19,6 @@ export function loadNextStudent() {
 		student.set({
 			username: chosenId,
 			commentIds: [],
-			submissionTime: "",
 		});
 	} else {
 		student.set(null);

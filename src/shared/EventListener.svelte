@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { onDestroy } from "svelte";
-	import { getModificationTimes } from "./data/server";
-	import { getHomeworkFolder } from "./helpers";
+	import { getModificationTimes } from "../data/server";
+	import { getHomeworkFolder } from "../helpers";
 	import {
 		collectedRequests,
 		config,
 		displayUrl,
 		fileModificationTimes,
 		pluginConnected,
-	} from "./stores";
+	} from "../stores";
 
 	const commEl = document.getElementById("comms");
 	const observer = new MutationObserver((mutationsList) => {

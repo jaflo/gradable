@@ -2,12 +2,11 @@
 	import { calculateScore } from "../helpers";
 	import { homework, student, config } from "../stores";
 
-	const studentIds = $config.studentIds;
 	let selected = $student.username;
 
-	function findCompletedEntry(studentId, homework): Student {
+	function findCompletedEntry(current, homework): Student {
 		return homework.students.find(
-			(student) => student.username === studentId
+			(student) => student.username === current.username
 		);
 	}
 
@@ -23,7 +22,6 @@
 			$student = {
 				username: selected,
 				commentIds: [],
-				submissionTime: "",
 			};
 		}
 	}
@@ -31,12 +29,12 @@
 
 <div>
 	<select bind:value={selected}>
-		{#each studentIds as studentId}
-			<option value={studentId}>
-				{studentId}
-				{#if findCompletedEntry(studentId, $homework)}
+		{#each $config.students as student}
+			<option value={student.username}>
+				{student.username}
+				{#if findCompletedEntry(student, $homework)}
 					({calculateScore(
-						findCompletedEntry(studentId, $homework).commentIds,
+						findCompletedEntry(student, $homework).commentIds,
 						$homework.possibleComments
 					)}%)
 				{/if}

@@ -23,3 +23,21 @@ export function messageExtension(message) {
 export function getHomeworkFolder(url) {
 	return url.split("/")[5];
 }
+
+export function parseStudentConfigDump(string: string): StudentConfig[] {
+	return string
+		.split("\n")
+		.filter((line) => !!line)
+		.map((line) => line.split("\t"))
+		.map(([username, password]) => ({
+			username,
+			password,
+			canvasId: "",
+		}));
+}
+
+export function stringifyStudentConfigDump(students: StudentConfig[]): string {
+	return students
+		.map((student) => `${student.username}\t${student.password}`)
+		.join("\n");
+}

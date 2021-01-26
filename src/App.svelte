@@ -5,7 +5,7 @@
 	import GradeStudent from "./grade/GradeStudent.svelte";
 	import { homework, student, config, pluginConnected } from "./stores";
 	import { messageExtension } from "./helpers";
-	import EventListener from "./EventListener.svelte";
+	import EventListener from "./shared/EventListener.svelte";
 	import PluginInstallPrompt from "./setup/PluginInstallPrompt.svelte";
 
 	const magicPluginClassName = "gradable-plugin-present";

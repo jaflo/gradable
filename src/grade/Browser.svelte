@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { messageExtension } from "../helpers";
-	import { displayUrl } from "../stores";
+	import { getHomeworkFolder, messageExtension } from "../helpers";
+	import { config, displayUrl, student } from "../stores";
+	import { lock, unlock } from "../data/server";
 
 	export let embeddedUrl = "about:blank";
 	export let iframeRef;
@@ -15,11 +16,29 @@
 			value: $displayUrl,
 		});
 	}
+
+	function unlockCurrent() {
+		unlock($displayUrl, $student.username, $config);
+	}
+
+	function lockCurrent() {
+		lock($displayUrl, $student.username, $config);
+	}
 </script>
 
 <div class="browser">
 	<div class="top">
 		<div class="location">{$displayUrl}<span>ignore</span></div>
+		<button
+			on:click={unlockCurrent}
+			disabled={!getHomeworkFolder($displayUrl)}>
+			Unlock {getHomeworkFolder($displayUrl) || ""}
+		</button>
+		<button
+			on:click={lockCurrent}
+			disabled={!getHomeworkFolder($displayUrl)}>
+			Lock {getHomeworkFolder($displayUrl) || ""}
+		</button>
 		<button on:click={clearCookies}>Clear cookies</button>
 		<button on:click={refreshEmbed}>Refresh</button>
 	</div>

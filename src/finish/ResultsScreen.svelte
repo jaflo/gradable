@@ -3,10 +3,11 @@
 	import { student, homework, checkpoints, config } from "../stores";
 
 	$: students = ($homework
-		? $config.studentIds.map(
-				(studentId) =>
+		? $config.students.map(
+				(student) =>
 					$homework?.students.find(
-						(student) => student.username === studentId
+						(gradedStudent) =>
+							gradedStudent.username === student.username
 					) || {}
 		  )
 		: []) as Student[];

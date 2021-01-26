@@ -1,12 +1,20 @@
 <script lang="ts">
 	import { timeago } from "../helpers";
-	import { student, homework, checkpoints } from "../stores";
+	import {
+		student,
+		homework,
+		checkpoints,
+		collectedRequests,
+		fileModificationTimes,
+	} from "../stores";
 
 	let chosenCheckpoint = 0;
 	$: sortedCheckpoints =
 		$checkpoints?.sort((a, b) => b.lastChange - a.lastChange) || [];
 
 	function restore() {
+		$collectedRequests = [];
+		$fileModificationTimes = {};
 		const checkpoint = $checkpoints[chosenCheckpoint];
 		$homework = checkpoint.homework;
 		$student = checkpoint.currentStudent;

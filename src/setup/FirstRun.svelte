@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { pingServer } from "../data/server";
+	import { parseStudentConfigDump } from "../helpers";
+	import StudentConfig from "../shared/StudentConfig.svelte";
 	import { config } from "../stores";
 
 	let token = "";
 	let username = "";
-	let studentIdsRaw = "";
+	let students = [];
 
 	const ENDPOINT_NAME = "gradable.php";
 	const SELF_BASE_PATH = document.location.href;
@@ -13,7 +15,7 @@
 	$: proposedConfig = {
 		token,
 		endpoint,
-		studentIds: studentIdsRaw.split("\n"),
+		students,
 	};
 
 	function verify() {
@@ -22,7 +24,7 @@
 				if (response.success) {
 					$config = proposedConfig;
 				} else {
-					throw new Error("Failed connection");
+					alert("Invalid token");
 				}
 			})
 			.catch(() => {
@@ -35,7 +37,7 @@
 	}
 </script>
 
-<h1>Needs setup before running</h1>
+<h1>Setup</h1>
 
 <ul>
 	<li>
@@ -56,12 +58,11 @@
 		and paste it here:
 		<input type="text" bind:value={token} />
 	</li>
-	<li>
-		Paste your list of student IDs separated by linebreaks here:
-		<textarea bind:value={studentIdsRaw} />
-	</li>
+	<li>Paste your list of students separated by linebreaks below.</li>
 </ul>
 
-<button on:click={verify} disabled={!username || !token || !studentIdsRaw}>
-	I finished all steps
+<StudentConfig bind:students />
+
+<button on:click={verify} disabled={!username || !token || !students}>
+	Save and continue
 </button>

@@ -1,4 +1,4 @@
-<h1>Needs setup before running</h1>
+<h1>Install extension</h1>
 
 Install the companion browser extension for
 <a
