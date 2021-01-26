@@ -77,8 +77,15 @@ if (isset($_POST["lock"])) {
 	$shouldunlock = $_POST["lock"] == "no";
 	$action = $shouldunlock ? "unlock" : "lock";
 	$chmodval = $shouldunlock ? "755" : "700";
+	$command = "chmod -R 0" . $chmodval . " " . $fullpath;
 
-	$status = exec("chmod -R 0" . $chmodval . " " . $fullpath);
+	$username = $_POST["user"];
+	preg_replace("/[^A-Za-z0-9 ]/", "", $username);
+
+	$tmp_pass_file = "../tmp_" . bin2hex(random_bytes(10));
+	file_put_contents($tmp_pass_file, $_POST["pass"]);
+	$status = exec('sshpass -f ' . $tmp_pass_file . ' ssh ' . $username . '@linux.cs.utexas.edu "' . $command . '"');
+	unlink($tmp_pass_file);
 
 	echo json_encode(array(
 		"result" => $status,

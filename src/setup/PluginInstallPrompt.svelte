@@ -8,7 +8,7 @@ Install the companion browser extension for
 or
 <a
 	href="https://chrome.google.com/webstore/detail/njijmdbjijgeodnhcnkknkeopbhfgpbg"
-	>Chrome</a
+	target="_blank">Chrome</a
 >
 and
 <!-- svelte-ignore a11y-invalid-attribute -->
