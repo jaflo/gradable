@@ -49,6 +49,15 @@ if (isset($_POST["ping"])) {
 	die();
 }
 
+if (isset($_POST["remove"])) {
+	rmdir($gradable_folder);
+	unlink($token_file);
+	echo json_encode(array(
+		"success" => !file_exists($token_file)
+	));
+	die();
+}
+
 if (!isset($_POST["url"])) {
 	echo json_encode(array(
 		"success" => false,
@@ -80,7 +89,6 @@ $basepath = "/projects/coursework/" . $matches[2] . "-" .
 	"/" . $matches[4];
 $fullpath = realpath($basepath);
 
-
 if (isset($_POST["lock"])) {
 	$shouldunlock = $_POST["lock"] == "no";
 	$action = $shouldunlock ? "unlock" : "lock";
@@ -109,8 +117,10 @@ if (isset($_POST["lock"])) {
 		"result" => join("\n", $status),
 		"path" => $fullpath
 	));
-} else if (isset($_POST["remove"])) {
+} else {
 	echo json_encode(array(
-		"success" => rmdir($gradable_folder) && unlink($token_file)
+		"result" => "unknown command",
+		"success" => false
 	));
+	die();
 }
