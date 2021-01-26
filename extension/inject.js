@@ -19,9 +19,9 @@ if (isEmbedded()) {
 
 				if (candidate) {
 					el.style.borderRadius = "3px";
-					el.style.background = "#297373";
+					el.style.background = "#297373"; // var(--good-dark)
 					el.style.boxShadow = "0 0 0 10px #297373";
-					el.style.color = "#E6E6E6";
+					el.style.color = "#E6E6E6"; // var(--background)
 				}
 			});
 		}

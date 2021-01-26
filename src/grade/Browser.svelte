@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { messageExtension } from "../helpers";
+	import { displayUrl } from "../stores";
 
 	export let embeddedUrl = "about:blank";
-	export let displayUrl = "about:blank";
 	export let iframeRef;
 
 	function refreshEmbed() {
@@ -12,14 +12,14 @@
 	function clearCookies() {
 		messageExtension({
 			type: "clear-cookies",
-			value: displayUrl,
+			value: $displayUrl,
 		});
 	}
 </script>
 
 <div class="browser">
 	<div class="top">
-		<div class="location">{displayUrl}<span>ignore</span></div>
+		<div class="location">{$displayUrl}<span>ignore</span></div>
 		<button on:click={clearCookies}>Clear cookies</button>
 		<button on:click={refreshEmbed}>Refresh</button>
 	</div>
@@ -36,6 +36,7 @@
 		display: flex;
 		flex-direction: column;
 		flex: 1;
+		height: 100%;
 	}
 
 	.top {
@@ -55,6 +56,7 @@
 
 	.location span {
 		font-size: 0;
+		user-select: none;
 	}
 
 	button {

@@ -66,11 +66,6 @@
 		{#each requests as request}
 			<tr>
 				<td>{request.statusCode}</td>
-				<td title={request.url}>
-					<a href={request.url} target="_blank">
-						{request.displayUrl}
-					</a>
-				</td>
 				{#if request.lastModified}
 					<td>
 						{#if request.daysLate > 0}
@@ -83,19 +78,36 @@
 						<i>unknown</i>
 					</td>
 				{/if}
+				<td title={request.url}>
+					<a href={request.url} target="_blank">
+						{request.displayUrl}
+					</a>
+				</td>
 			</tr>
+		{:else}
+			<tr><i>No requests logged</i></tr>
 		{/each}
 	</table>
+	<div class="fade" />
 </div>
 
 <style>
 	.wrap {
-		overflow: auto;
-		scrollbar-width: none;
+		padding-bottom: var(--default-pad);
+		position: relative;
 	}
 
-	.wrap::-webkit-scrollbar {
-		display: none;
+	.fade {
+		position: absolute;
+		top: 0;
+		right: calc(-1 * var(--default-pad));
+		bottom: 0;
+		width: calc(2 * var(--default-pad));
+		background: linear-gradient(
+			90deg,
+			rgba(230, 230, 230, 0) 0%,
+			rgba(230, 230, 230, 1) 100%
+		);
 	}
 
 	table {
@@ -103,8 +115,8 @@
 	}
 
 	.summary {
-		color: #e6e6e6;
-		background: #297373;
+		color: var(--background);
+		background: var(--good-dark);
 		padding: 0.5em;
 		display: flex;
 	}
@@ -119,8 +131,8 @@
 
 	.late,
 	.latebadge {
-		color: #e6e6e6;
-		background: #ff8552;
+		color: var(--background);
+		background: var(--attention);
 	}
 
 	.latebadge {

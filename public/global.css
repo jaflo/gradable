@@ -1,3 +1,11 @@
+:root {
+	--default-pad: 20px;
+	--background: #e6e6e6;
+	--text-color: #39393a;
+	--good-dark: #297373;
+	--attention: #ff8552;
+}
+
 html,
 body {
 	position: relative;
@@ -7,13 +15,13 @@ body {
 }
 
 body {
-	padding: 20px;
+	padding: var(--default-pad);
 	box-sizing: border-box;
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
 		Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	font-size: 15px;
-	background: #e6e6e6;
-	color: #39393a;
+	background: var(--background);
+	color: var(--text-color);
 }
 
 h1 {
@@ -56,7 +64,7 @@ input:disabled {
 }
 
 button {
-	color: #39393a;
+	color: var(--text-color);
 	background-color: #f4f4f4;
 	outline: none;
 	cursor: pointer;

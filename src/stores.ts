@@ -21,3 +21,5 @@ export const checkpoints = restoredWritable<Checkpoint[]>("checkpoints", []);
 
 export const collectedRequests = writable<HTTPRequest[]>([]);
 export const fileModificationTimes = writable<Record<string, Date>>({});
+export const displayUrl = writable<string>("");
+export const pluginConnected = writable<boolean>(false);

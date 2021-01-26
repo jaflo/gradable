@@ -1,13 +1,22 @@
 const browser = chrome || browser;
 
 document.body.classList.add("gradable-plugin-present");
+const commEl = document.getElementById("comms");
 
-browser.runtime.onMessage.addListener(({ type, value }) => {
-	if (type === "new-request") {
-		// externally_connectable not supported in FF, so use workaround
-		document.body.dataset.newestRequest = JSON.stringify(value);
-	} else if (type === "url-change") {
-		document.body.dataset.embeddedUrl = JSON.stringify(value);
+function sendMessage(type, value) {
+	// externally_connectable not supported in FF, so use workaround
+	document.getElementById("comms").dataset[type] = JSON.stringify(value);
+}
+
+let eventListener = browser.runtime.onMessage.addListener(({ type, value }) => {
+	const eventMap = {
+		"new-request": "newestRequest",
+		"url-change": "embeddedUrl",
+		activated: "activated",
+		deactivated: "deactivated",
+	};
+	if (eventMap[type]) {
+		sendMessage(eventMap[type], value);
 	}
 });
 
@@ -17,13 +26,13 @@ const observer = new MutationObserver((mutationsList) => {
 			(mutation) => mutation.attributeName === "data-tell-extension"
 		)
 	) {
-		const { type, value } = JSON.parse(document.body.dataset.tellExtension);
+		const { type, value } = JSON.parse(commEl.dataset.tellExtension);
 		if (type !== "idle") {
 			browser.runtime.sendMessage({ type, value });
-			document.body.dataset.tellExtension = JSON.stringify({
+			sendMessage("tellExtension", {
 				type: "idle",
 			});
 		}
 	}
 });
-observer.observe(document.body, { attributes: true });
+observer.observe(commEl, { attributes: true });

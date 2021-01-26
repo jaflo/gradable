@@ -15,8 +15,9 @@ export function calculateScore(
 	return points;
 }
 
+const commEl = document.getElementById("comms");
 export function messageExtension(message) {
-	document.body.dataset.tellExtension = JSON.stringify(message);
+	commEl.dataset.tellExtension = JSON.stringify(message);
 }
 
 export function getHomeworkFolder(url) {

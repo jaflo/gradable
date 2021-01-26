@@ -1,40 +1,68 @@
 const browser = chrome || browser;
 
 let homeworkNumber = null;
+let tabId = null;
 
-browser.webRequest.onHeadersReceived.addListener(
-	function (details) {
-		const { statusCode, url, method, responseSize } = details;
+function detachEventListener() {
+	browser.webRequest.onHeadersReceived.removeListener(handleRequest);
+}
 
-		const request = {
-			statusCode,
-			url,
-			method,
-			responseSize,
-		};
+function attachRequestListener() {
+	detachEventListener();
 
-		if (!url.includes("www.cs.utexas.edu")) {
-			sendMessage({
-				type: "new-request",
-				value: request,
-			});
-		}
-	},
-	{ urls: ["https://*.cs.utexas.edu/*"] },
-	["responseHeaders"]
-);
-
-function sendMessage(message) {
-	browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-		tabs.forEach((tab) => browser.tabs.sendMessage(tab.id, message));
+	browser.webRequest.onHeadersReceived.addListener(handleRequest, {
+		urls: ["https://*.cs.utexas.edu/*"],
+		tabId,
 	});
 }
 
-function messageHandler({ type, value }, sender, respond) {
+browser.tabs.onRemoved.addListener(detachEventListener);
+
+function handleRequest(details) {
+	const { statusCode, url, method, responseSize } = details;
+
+	const request = {
+		statusCode,
+		url,
+		method,
+		responseSize,
+	};
+
+	if (
+		url.includes("gradable.php") &&
+		url.startsWith("https://www.cs.utexas.edu/~")
+	) {
+		// ignore API endpoint requests
+		return;
+	}
+
+	sendMessage({
+		type: "new-request",
+		value: request,
+	});
+}
+
+function sendMessage(message) {
+	if (!tabId) return;
+	browser.tabs.sendMessage(tabId, message);
+}
+
+function messageHandler({ type, value }, sender) {
 	if (type === "ping") {
-		respond({
+		sendMessage({
 			type: "pong",
 		});
+	} else if (type === "register-active") {
+		// disconnect old tab
+		sendMessage({
+			type: "deactivated",
+		});
+		// set new tab and activate
+		tabId = sender.tab.id;
+		sendMessage({
+			type: "activated",
+		});
+		attachRequestListener();
 	} else if (type === "clear-cookies") {
 		browser.cookies.getAll({ url: value }, (cookies) =>
 			cookies.forEach((cookie) =>
