@@ -96,7 +96,7 @@ if (isset($_POST["lock"])) {
 	$command = "chmod -R 0" . $chmodval . " " . $fullpath;
 
 	$username = $_POST["user"];
-	preg_replace("/[^A-Za-z0-9 ]/", "", $username);
+	preg_replace("/[^A-Za-z0-9]/", "", $username);
 
 	$tmp_pass_file = $gradable_folder . bin2hex(random_bytes(10));
 	file_put_contents($tmp_pass_file, $_POST["pass"]);
@@ -105,6 +105,7 @@ if (isset($_POST["lock"])) {
 	unlink($tmp_pass_file);
 
 	echo json_encode(array(
+		"success" => (strpos($status, "denied") == false),
 		"result" => $status,
 		"status" => $action . "ed folder",
 		"path" => $fullpath

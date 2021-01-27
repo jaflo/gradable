@@ -17,12 +17,20 @@
 		});
 	}
 
+	function checkServerResponse(response) {
+		if (!response.success) {
+			alert("Failed. " + response.result);
+		}
+	}
+
 	function unlockCurrent() {
-		unlock($displayUrl, $student.username, $config);
+		unlock($displayUrl, $student.username, $config).then(
+			checkServerResponse
+		);
 	}
 
 	function lockCurrent() {
-		lock($displayUrl, $student.username, $config);
+		lock($displayUrl, $student.username, $config).then(checkServerResponse);
 	}
 </script>
 
@@ -31,12 +39,14 @@
 		<div class="location">{$displayUrl}<span>ignore</span></div>
 		<button
 			on:click={unlockCurrent}
-			disabled={!getHomeworkFolder($displayUrl)}>
+			disabled={!getHomeworkFolder($displayUrl)}
+		>
 			Unlock {getHomeworkFolder($displayUrl) || ""}
 		</button>
 		<button
 			on:click={lockCurrent}
-			disabled={!getHomeworkFolder($displayUrl)}>
+			disabled={!getHomeworkFolder($displayUrl)}
+		>
 			Lock {getHomeworkFolder($displayUrl) || ""}
 		</button>
 		<button on:click={clearCookies}>Clear cookies</button>

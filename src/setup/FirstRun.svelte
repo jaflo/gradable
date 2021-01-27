@@ -39,14 +39,15 @@
 
 <h1>Setup</h1>
 
-<ul>
+<ol>
 	<li>
-		What is your UT CS username?
+		Enter your UT CS username:
 		<input type="text" bind:value={username} />
 	</li>
 	<li>
 		Log in to your UT CS account and run
 		<input
+			readonly
 			type="text"
 			on:click={selectAll}
 			on:focus={selectAll}
@@ -59,7 +60,7 @@
 		<input type="text" bind:value={token} />
 	</li>
 	<li>Paste your list of students separated by linebreaks below.</li>
-</ul>
+</ol>
 
 <StudentConfig bind:students />
 

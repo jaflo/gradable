@@ -12,7 +12,10 @@ if (isEmbedded()) {
 	browser.runtime.onMessage.addListener(({ type, value }) => {
 		if (type === "refresh-page") {
 			window.location = window.location;
-		} else if (type === "highlight-homework-number") {
+		} else if (
+			type === "highlight-homework-number" &&
+			!document.location.href.split("/")[5] // on homework listing
+		) {
 			const regex = new RegExp(`H*W\\D*${value}\\b`, "gi");
 			[...document.getElementsByTagName("a")].forEach((el) => {
 				const candidate = regex.exec(el.href);

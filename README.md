@@ -29,7 +29,7 @@ Before you publish the extensions you will need to set up the listings in the ap
 ```json
 {
 	"addons": {
-		"{yourexte-nsio-nid0-from-firefox00000}": {
+		"your-extension-id@firefox": {
 			"updates": []
 		}
 	}
