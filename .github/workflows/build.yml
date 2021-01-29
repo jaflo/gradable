@@ -12,9 +12,7 @@ jobs:
       - run: npm install
       - run: npm run build
       - name: Update cache buster
-        run: |
-          sed -i 's/GITHUB_SHA/${{ github.sha }}/g' public/index.html
-          cat public/index.html
+        run: sed -i 's/GITHUB_SHA/${{ github.sha }}/g' public/index.html
       - uses: webfactory/ssh-agent@v0.4.1
         with:
           ssh-private-key: ${{ secrets.DEPLOY_KEY }}
@@ -25,4 +23,3 @@ jobs:
           REPOSITORY_NAME: jaflo/microsites
           BRANCH: master
           TARGET_FOLDER: gradable # ...here
-          CLEAN: true
