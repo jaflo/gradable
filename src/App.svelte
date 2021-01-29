@@ -44,39 +44,51 @@
 			value: $homework.number,
 		});
 	}
+
+	enum ServerVersionCheck {
+		Pending,
+		OutOfDate,
+		UpToDate,
+	}
+	let serverVersionCheck = ServerVersionCheck.Pending;
+	$: $config &&
+		checkServerVersion($config)
+			.then(
+				(upToDate) =>
+					(serverVersionCheck = upToDate
+						? ServerVersionCheck.UpToDate
+						: ServerVersionCheck.OutOfDate)
+			)
+			.catch((e) => (serverVersionCheck = ServerVersionCheck.OutOfDate));
 </script>
 
 {#if pluginInstalled}
 	{#if $config === null}
 		<FirstRun />
 	{:else if $pluginConnected}
-		{#await checkServerVersion($config)}
+		{#if serverVersionCheck === ServerVersionCheck.Pending}
 			Checking server version...
-		{:then upToDate}
-			{#if upToDate}
-				{#if $homework !== null}
-					{#if $student !== null}
-						<GradeStudent />
-					{:else}
-						<ResultsScreen />
-					{/if}
+		{:else if serverVersionCheck === ServerVersionCheck.UpToDate}
+			{#if $homework !== null}
+				{#if $student !== null}
+					<GradeStudent />
 				{:else}
-					<SetupScreen />
+					<ResultsScreen />
 				{/if}
 			{:else}
-				Looks like your server version is out of date. Please run this
-				command again:
-				<input
-					readonly
-					type="text"
-					on:click={selectAll}
-					on:focus={selectAll}
-					value={SERVER_SETUP_CMD}
-				/>
+				<SetupScreen />
 			{/if}
-		{:catch error}
-			{error.message}
-		{/await}
+		{:else}
+			Looks like your server script is out of date. Please run this
+			command again:
+			<input
+				readonly
+				type="text"
+				on:click={selectAll}
+				on:focus={selectAll}
+				value={SERVER_SETUP_CMD}
+			/>
+		{/if}
 	{:else}
 		<!-- svelte-ignore a11y-invalid-attribute -->
 		Plugin disconnected, did you open this website in another tab? Try

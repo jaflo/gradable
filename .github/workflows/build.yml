@@ -14,6 +14,7 @@ jobs:
       - name: Update cache buster
         uses: jacobtomlinson/gha-find-replace@master
         with:
+          include: 'public/index.html'
           find: 'GITHUB_SHA'
           replace: '${{ github.sha }}'
       - uses: webfactory/ssh-agent@v0.4.1
