@@ -23,3 +23,5 @@ jobs:
           REPOSITORY_NAME: jaflo/microsites
           BRANCH: master
           TARGET_FOLDER: gradable # ...here
+          CLEAN: true
+          PRESERVE: true
