@@ -65,7 +65,7 @@
 		type="text"
 		class="short"
 		bind:value={year}
-	/>.cs.utexas.edu/<input type="text" bind:value={folder} />
+	/>.cs.utexas.edu/<input type="text" bind:value={folder} readonly />
 </div>
 
 <button

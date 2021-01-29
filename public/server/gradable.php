@@ -85,11 +85,11 @@ if (count($matches) != 5) {
 }
 
 $basepath = "/projects/coursework/" . $matches[2] . "-" .
-	$matches[1] . "/cs329e-bulko/" . $matches[3] .
-	"/" . $matches[4];
-$fullpath = realpath($basepath);
+	$matches[1] . "/cs329e-bulko/" . $matches[3];
 
 if (isset($_POST["lock"])) {
+	$fullpath = realpath($basepath);
+
 	$shouldunlock = $_POST["lock"] == "no";
 	$action = $shouldunlock ? "unlock" : "lock";
 	$chmodval = $shouldunlock ? "755" : "700";
@@ -111,6 +111,8 @@ if (isset($_POST["lock"])) {
 		"path" => $fullpath
 	));
 } else if (isset($_POST["ls"])) {
+	$fullpath = realpath($basepath . "/" . $matches[4]);
+
 	$status = array();
 	exec("cd " . $fullpath . "; find . -type f ! -name '*.txt' -printf '%T@ %p\n'", $status);
 

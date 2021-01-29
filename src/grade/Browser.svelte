@@ -20,6 +20,8 @@
 	function checkServerResponse(response) {
 		if (!response.success) {
 			alert("Failed. " + response.result);
+		} else {
+			messageExtension({ type: "refresh-page" });
 		}
 	}
 
