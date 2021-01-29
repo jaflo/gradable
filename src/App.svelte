@@ -4,9 +4,10 @@
 	import ResultsScreen from "./finish/ResultsScreen.svelte";
 	import GradeStudent from "./grade/GradeStudent.svelte";
 	import { homework, student, config, pluginConnected } from "./stores";
-	import { messageExtension } from "./helpers";
+	import { messageExtension, selectAll } from "./helpers";
 	import EventListener from "./shared/EventListener.svelte";
 	import PluginInstallPrompt from "./setup/PluginInstallPrompt.svelte";
+	import { checkServerVersion, SERVER_SETUP_CMD } from "./data/server";
 
 	const magicPluginClassName = "gradable-plugin-present";
 	let pluginInstalled = document.body.classList.contains(
@@ -49,15 +50,33 @@
 	{#if $config === null}
 		<FirstRun />
 	{:else if $pluginConnected}
-		{#if $homework !== null}
-			{#if $student !== null}
-				<GradeStudent />
+		{#await checkServerVersion($config)}
+			Checking server version...
+		{:then upToDate}
+			{#if upToDate}
+				{#if $homework !== null}
+					{#if $student !== null}
+						<GradeStudent />
+					{:else}
+						<ResultsScreen />
+					{/if}
+				{:else}
+					<SetupScreen />
+				{/if}
 			{:else}
-				<ResultsScreen />
+				Looks like your server version is out of date. Please run this
+				command again:
+				<input
+					readonly
+					type="text"
+					on:click={selectAll}
+					on:focus={selectAll}
+					value={SERVER_SETUP_CMD}
+				/>
 			{/if}
-		{:else}
-			<SetupScreen />
-		{/if}
+		{:catch error}
+			{error.message}
+		{/await}
 	{:else}
 		<!-- svelte-ignore a11y-invalid-attribute -->
 		Plugin disconnected, did you open this website in another tab? Try

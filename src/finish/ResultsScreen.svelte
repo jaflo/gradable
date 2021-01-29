@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { calculateScore } from "../helpers";
+	import { calculateScore, selectAll } from "../helpers";
 	import { student, homework, checkpoints, config } from "../stores";
 
 	$: students = ($homework
@@ -74,10 +74,6 @@
 			.map((commentId) => $homework.possibleComments[commentId])
 			.map(({ points, text }) => `-${points}: ${text}`)
 			.join(separator);
-	}
-
-	function selectAll(e) {
-		e.target.select();
 	}
 </script>
 

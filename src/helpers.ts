@@ -41,3 +41,7 @@ export function stringifyStudentConfigDump(students: StudentConfig[]): string {
 		.map((student) => `${student.username}\t${student.password}`)
 		.join("\n");
 }
+
+export function selectAll(e) {
+	e.target.select();
+}

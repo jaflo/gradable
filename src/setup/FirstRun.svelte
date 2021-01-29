@@ -1,15 +1,16 @@
 <script lang="ts">
-	import { pingServer } from "../data/server";
-	import { parseStudentConfigDump } from "../helpers";
+	import {
+		pingServer,
+		ENDPOINT_NAME,
+		SERVER_SETUP_CMD,
+	} from "../data/server";
+	import { selectAll } from "../helpers";
 	import StudentConfig from "../shared/StudentConfig.svelte";
 	import { config } from "../stores";
 
 	let token = "";
 	let username = "";
 	let students = [];
-
-	const ENDPOINT_NAME = "gradable.php";
-	const SELF_BASE_PATH = document.location.href;
 
 	$: endpoint = `https://www.cs.utexas.edu/~${username}/${ENDPOINT_NAME}`;
 	$: proposedConfig = {
@@ -31,10 +32,6 @@
 				alert("Could not connect to server");
 			});
 	}
-
-	function selectAll(e) {
-		e.target.select();
-	}
 </script>
 
 <h1>Setup</h1>
@@ -51,7 +48,7 @@
 			type="text"
 			on:click={selectAll}
 			on:focus={selectAll}
-			value={`cd ~/public_html && wget -O ${ENDPOINT_NAME} "${SELF_BASE_PATH}server/${ENDPOINT_NAME}" && chmod +x ${ENDPOINT_NAME}`}
+			value={SERVER_SETUP_CMD}
 		/>
 	</li>
 	<li>

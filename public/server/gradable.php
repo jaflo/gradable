@@ -3,6 +3,7 @@
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST");
 
+$SERVER_VERSION = 1; // match with MIN_SERVER_VERSION in server.ts
 $gradable_folder = "./gradable/";
 $token_file = $gradable_folder . "token.txt";
 
@@ -45,6 +46,14 @@ if (isset($_POST["ping"])) {
 	echo json_encode(array(
 		"success" => true,
 		"status" => "pong"
+	));
+	die();
+}
+
+if (isset($_POST["version"])) {
+	echo json_encode(array(
+		"success" => true,
+		"version" => $SERVER_VERSION
 	));
 	die();
 }
