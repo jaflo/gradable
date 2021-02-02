@@ -39,18 +39,8 @@
 <div class="browser">
 	<div class="top">
 		<div class="location">{$displayUrl}<span>ignore</span></div>
-		<button
-			on:click={unlockCurrent}
-			disabled={!getHomeworkFolder($displayUrl)}
-		>
-			Unlock {getHomeworkFolder($displayUrl) || ""}
-		</button>
-		<button
-			on:click={lockCurrent}
-			disabled={!getHomeworkFolder($displayUrl)}
-		>
-			Lock {getHomeworkFolder($displayUrl) || ""}
-		</button>
+		<button on:click={unlockCurrent}>Unlock</button>
+		<button on:click={lockCurrent}>Lock</button>
 		<button on:click={clearCookies}>Clear cookies</button>
 		<button on:click={refreshEmbed}>Refresh</button>
 	</div>

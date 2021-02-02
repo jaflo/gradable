@@ -3,7 +3,7 @@
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST");
 
-$SERVER_VERSION = 1; // match with MIN_SERVER_VERSION in server.ts
+$SERVER_VERSION = 2; // match with MIN_SERVER_VERSION in server.ts
 $gradable_folder = "./gradable/";
 $token_file = $gradable_folder . "token.txt";
 
@@ -33,7 +33,7 @@ if (!is_file($token_file)) {
 
 header("Content-type: application/json");
 
-if ($_POST["token"] != file_get_contents($token_file)) {
+if ($_POST["token"] !== file_get_contents($token_file)) {
 	echo json_encode(array(
 		"success" => false,
 		"status" => "unauthorized",
@@ -75,34 +75,52 @@ if (!isset($_POST["url"])) {
 	die();
 }
 
-// https://fall-2020.cs.utexas.edu/cs329e-bulko/username/HW12
-// [..., "fall", "2020", "username", "HW12"]
+function get_path_from_url($homework_subfolder)
+{
+	// https://fall-2020.cs.utexas.edu/cs329e-bulko/username/HW12
+	// -> [..., "fall", "2020", "username"(, "HW12")]
 
-$matches = [];
-preg_match(
-	'/https:\/\/(\w+)-(\d{4})\.cs\.utexas\.edu\/cs329e-bulko\/([^\/]+)\/([^\/]+)/',
-	$_POST["url"],
-	$matches
-);
+	$regex = '/https:\/\/(\w+)-(\d{4})\.cs\.utexas\.edu\/cs329e-bulko\/([^\/]+)/';
+	$expected_count = 4;
 
-if (count($matches) != 5) {
-	echo json_encode(array(
-		"success" => false,
-		"status" => "invalid url"
-	));
-	die();
+	if ($homework_subfolder) {
+		$regex = '/https:\/\/(\w+)-(\d{4})\.cs\.utexas\.edu\/cs329e-bulko\/([^\/]+)\/([^\/]+)/';
+		$expected_count = 5;
+	}
+
+	$matches = [];
+	preg_match(
+		$regex,
+		$_POST["url"],
+		$matches
+	);
+
+	if (count($matches) !== $expected_count) {
+		echo json_encode(array(
+			"success" => false,
+			"status" => "invalid url"
+		));
+		die();
+	}
+
+	$basepath = "/projects/coursework/" . $matches[2] . "-" .
+		$matches[1] . "/cs329e-bulko/" . $matches[3];
+
+	if ($homework_subfolder) {
+		// add the homework folder
+		return realpath($basepath . "/" . $matches[4]);
+	} else {
+		return realpath($basepath);
+	}
 }
 
-$basepath = "/projects/coursework/" . $matches[2] . "-" .
-	$matches[1] . "/cs329e-bulko/" . $matches[3];
-
 if (isset($_POST["lock"])) {
-	$fullpath = realpath($basepath);
+	$fullpath = get_path_from_url(false);
 
-	$shouldunlock = $_POST["lock"] == "no";
+	$shouldunlock = $_POST["lock"] === "no";
 	$action = $shouldunlock ? "unlock" : "lock";
 	$chmodval = $shouldunlock ? "755" : "700";
-	$command = "chmod -R 0" . $chmodval . " " . $fullpath;
+	$command = "chmod -R 0" . $chmodval . " " . $fullpath . " && echo success";
 
 	$username = $_POST["user"];
 	preg_replace("/[^A-Za-z0-9]/", "", $username);
@@ -114,13 +132,13 @@ if (isset($_POST["lock"])) {
 	unlink($tmp_pass_file);
 
 	echo json_encode(array(
-		"success" => (strpos($status, "denied") == false),
+		"success" => (strpos($status, "success") !== false),
 		"result" => $status,
 		"status" => $action . "ed folder",
 		"path" => $fullpath
 	));
 } else if (isset($_POST["ls"])) {
-	$fullpath = realpath($basepath . "/" . $matches[4]);
+	$fullpath = get_path_from_url(true);
 
 	$status = array();
 	exec("cd " . $fullpath . "; find . -type f ! -name '*.txt' -printf '%T@ %p\n'", $status);
