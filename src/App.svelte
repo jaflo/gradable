@@ -51,7 +51,10 @@
 		UpToDate,
 	}
 	let serverVersionCheck = ServerVersionCheck.Pending;
-	$: $config &&
+	let prevServerConfig = "";
+
+	$: if ($config && $config.endpoint + $config.token !== prevServerConfig) {
+		prevServerConfig = $config.endpoint + $config.token;
 		checkServerVersion($config)
 			.then(
 				(upToDate) =>
@@ -60,6 +63,7 @@
 						: ServerVersionCheck.OutOfDate)
 			)
 			.catch((e) => (serverVersionCheck = ServerVersionCheck.OutOfDate));
+	}
 </script>
 
 {#if pluginInstalled}
