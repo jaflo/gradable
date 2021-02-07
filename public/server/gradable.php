@@ -120,7 +120,7 @@ if (isset($_POST["lock"])) {
 	$shouldunlock = $_POST["lock"] === "no";
 	$action = $shouldunlock ? "unlock" : "lock";
 	$chmodval = $shouldunlock ? "755" : "700";
-	$command = "chmod -R 0" . $chmodval . " " . $fullpath . " && echo success";
+	$command = "chmod " . $chmodval . " " . $fullpath . " && echo success";
 
 	$username = $_POST["user"];
 	preg_replace("/[^A-Za-z0-9]/", "", $username);
