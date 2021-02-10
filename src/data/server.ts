@@ -1,6 +1,6 @@
 export const ENDPOINT_NAME = "gradable.php";
 export const SELF_BASE_PATH = document.location.href;
-const MIN_SERVER_VERSION = 2; // match with $SERVER_VERSION in gradable.php
+const MIN_SERVER_VERSION = 3; // match with $SERVER_VERSION in gradable.php
 
 export const SERVER_SETUP_CMD = `cd ~/public_html && wget -O ${ENDPOINT_NAME} "${SELF_BASE_PATH}server/${ENDPOINT_NAME}" && chmod +x ${ENDPOINT_NAME}`;
 
