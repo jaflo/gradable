@@ -3,9 +3,13 @@
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST");
 
-$SERVER_VERSION = 2; // match with MIN_SERVER_VERSION in server.ts
+$SERVER_VERSION = 3; // match with MIN_SERVER_VERSION in server.ts
 $gradable_folder = "./gradable/";
 $token_file = $gradable_folder . "token.txt";
+
+spl_autoload_register(function ($class) {
+	include str_replace("\\", "/", $class) . ".php";
+});
 
 if (!is_file($token_file)) {
 	if (!file_exists($gradable_folder)) {
@@ -119,23 +123,21 @@ if (isset($_POST["lock"])) {
 
 	$shouldunlock = $_POST["lock"] === "no";
 	$action = $shouldunlock ? "unlock" : "lock";
-	$chmodval = $shouldunlock ? "755" : "700";
-	$command = "chmod " . $chmodval . " " . $fullpath . " && echo success";
+	$command = $shouldunlock ?
+		// set all folders to 755 and files to 644
+		"(find " . $fullpath . " -type d -print0 | xargs -0 chmod 755) && (find " . $fullpath . " -type f -print0 | xargs -0 chmod 644) && echo success"
+		:
+		// only lock top folder
+		"chmod 700 " . $fullpath . " && echo success";
 
-	$username = $_POST["user"];
-	preg_replace("/[^A-Za-z0-9]/", "", $username);
-
-	$tmp_pass_file = $gradable_folder . bin2hex(random_bytes(10));
-	file_put_contents($tmp_pass_file, $_POST["pass"]);
-	chmod($tmp_pass_file, 0600);
-	$status = exec('sshpass -f ' . $tmp_pass_file . ' ssh ' . $username . '@linux.cs.utexas.edu "' . $command . '"');
-	unlink($tmp_pass_file);
+	$ssh = new \phpseclib\Net\SSH2("linux.cs.utexas.edu", 22);
+	$ssh->login($_POST["user"], $_POST["pass"]);
+	$status = $ssh->exec($command);
 
 	echo json_encode(array(
 		"success" => (strpos($status, "success") !== false),
-		"result" => $status,
-		"status" => $action . "ed folder",
-		"path" => $fullpath
+		"action" => $action,
+		"result" => $status
 	));
 } else if (isset($_POST["ls"])) {
 	$fullpath = get_path_from_url(true);

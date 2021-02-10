@@ -19,6 +19,8 @@ function send(lock, username, url, config: ConfigOptions) {
 
 	if (!password) {
 		throw new Error("Unknown student");
+	} else if (password === "UNKNOWN") {
+		throw new Error("Unknown password");
 	}
 
 	const data = new URLSearchParams();

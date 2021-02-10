@@ -1,10 +1,12 @@
 <script lang="ts">
-	import { getHomeworkFolder, messageExtension } from "../helpers";
+	import { messageExtension } from "../helpers";
 	import { config, displayUrl, student } from "../stores";
 	import { lock, unlock } from "../data/server";
 
 	export let embeddedUrl = "about:blank";
 	export let iframeRef;
+
+	let waitingOnServer = false;
 
 	function refreshEmbed() {
 		messageExtension({ type: "refresh-page" });
@@ -19,28 +21,42 @@
 
 	function checkServerResponse(response) {
 		if (!response.success) {
-			alert("Failed. " + response.result);
+			catchServerError("Failed. " + response.result);
 		} else {
 			messageExtension({ type: "refresh-page" });
+			waitingOnServer = false;
 		}
 	}
 
+	function catchServerError(error) {
+		alert(error);
+		waitingOnServer = false;
+	}
+
 	function unlockCurrent() {
-		unlock($displayUrl, $student.username, $config).then(
-			checkServerResponse
-		);
+		waitingOnServer = true;
+		unlock($displayUrl, $student.username, $config)
+			.then(checkServerResponse)
+			.catch(catchServerError);
 	}
 
 	function lockCurrent() {
-		lock($displayUrl, $student.username, $config).then(checkServerResponse);
+		waitingOnServer = true;
+		lock($displayUrl, $student.username, $config)
+			.then(checkServerResponse)
+			.catch(catchServerError);
 	}
 </script>
 
 <div class="browser">
 	<div class="top">
-		<div class="location">{$displayUrl}<span>ignore</span></div>
-		<button on:click={unlockCurrent}>Unlock</button>
-		<button on:click={lockCurrent}>Lock</button>
+		<a href={$displayUrl} class="location" target="_blank">
+			{$displayUrl}<span>ignore</span>
+		</a>
+		<button on:click={unlockCurrent} disabled={waitingOnServer}>
+			Unlock
+		</button>
+		<button on:click={lockCurrent} disabled={waitingOnServer}>Lock</button>
 		<button on:click={clearCookies}>Clear cookies</button>
 		<button on:click={refreshEmbed}>Refresh</button>
 	</div>
