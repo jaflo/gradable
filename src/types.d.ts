@@ -38,6 +38,7 @@ interface ConfigOptions {
 }
 
 interface StudentConfig {
+	realname: string;
 	username: string;
 	password: string;
 	canvasId: string; // unused

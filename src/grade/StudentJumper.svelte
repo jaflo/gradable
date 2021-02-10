@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { calculateScore } from "../helpers";
+	import { calculateScore, getName } from "../helpers";
 	import { homework, student, config } from "../stores";
 
 	let selected = $student.username;
@@ -31,7 +31,9 @@
 	<select bind:value={selected}>
 		{#each $config.students as student}
 			<option value={student.username}>
-				{student.username}
+				{getName(student.realname).last},
+				{getName(student.realname).first}
+				({student.username})
 				{#if findCompletedEntry(student, $homework)}
 					({calculateScore(
 						findCompletedEntry(student, $homework).commentIds,

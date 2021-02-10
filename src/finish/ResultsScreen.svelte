@@ -1,16 +1,20 @@
 <script lang="ts">
-	import { calculateScore, selectAll } from "../helpers";
+	import { calculateScore, getName, selectAll } from "../helpers";
 	import { student, homework, checkpoints, config } from "../stores";
 
+	interface NamedStudent extends Student {
+		realname: string;
+	}
+
 	$: students = ($homework
-		? $config.students.map(
-				(student) =>
-					$homework?.students.find(
-						(gradedStudent) =>
-							gradedStudent.username === student.username
-					) || {}
-		  )
-		: []) as Student[];
+		? $config.students.map((student) => ({
+				realname: student.realname,
+				...($homework?.students.find(
+					(gradedStudent) =>
+						gradedStudent.username === student.username
+				) || {}),
+		  }))
+		: []) as NamedStudent[];
 
 	function exportAndContinue() {
 		saveToCheckpoint();
@@ -80,7 +84,7 @@
 <table>
 	<thead>
 		<tr>
-			<td>id</td>
+			<td>name</td>
 			<td>grade</td>
 			<td width="99%">comments</td>
 			<td>actions</td>
@@ -89,7 +93,10 @@
 	<tbody>
 		{#each students as student, i}
 			<tr>
-				<td>{student.username}</td>
+				<td>
+					{getName(student.realname).last},
+					{getName(student.realname).first}
+				</td>
 				<td>
 					<input
 						readonly
