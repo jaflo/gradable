@@ -79,8 +79,8 @@ The recommended workflow is as follows:
 	</li>
 	<li>Grade the student shown (chosen randomly)</li>
 	<li>
-		Click the next student button to the next student randomly
-		<ol>
+		Click the next student button to load the next student randomly
+		<ul>
 			<li>
 				This should load faster because gradable already unlocked the
 				folder in the background
@@ -89,7 +89,7 @@ The recommended workflow is as follows:
 				Sometimes stuff goes wrong and you will see an ❌, click it to
 				see what happened
 			</li>
-		</ol>
+		</ul>
 	</li>
 	<li>
 		Once you are done, you will get a table of students, copy everything
