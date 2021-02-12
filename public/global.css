@@ -89,3 +89,12 @@ table {
 thead {
 	font-weight: bold;
 }
+
+.split {
+	display: flex;
+	margin-bottom: 0;
+}
+
+.split div {
+	flex: 1;
+}

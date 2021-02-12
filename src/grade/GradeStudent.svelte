@@ -44,8 +44,14 @@
 	}
 
 	function clearHomework() {
-		$homework = null;
-		$student = null;
+		if (
+			confirm(
+				"Are you sure you want to discard all progress on this homework?"
+			)
+		) {
+			$homework = null;
+			$student = null;
+		}
 	}
 </script>
 
@@ -77,7 +83,6 @@
 		</button>
 
 		<StudentJumper />
-
 		<Requests />
 	</div>
 
@@ -136,14 +141,5 @@
 		background: var(--good-dark);
 		height: 4px;
 		transition: width 0.3s ease-out;
-	}
-
-	.split {
-		display: flex;
-		margin-bottom: 0;
-	}
-
-	.split div {
-		flex: 1;
 	}
 </style>

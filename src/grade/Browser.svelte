@@ -1,12 +1,10 @@
 <script lang="ts">
+	import UnlockLock from "./UnlockLock.svelte";
 	import { messageExtension } from "../helpers";
-	import { config, displayUrl, student } from "../stores";
-	import { lock, unlock } from "../data/server";
+	import { displayUrl } from "../stores";
 
 	export let embeddedUrl = "about:blank";
 	export let iframeRef;
-
-	let waitingOnServer = false;
 
 	function refreshEmbed() {
 		messageExtension({ type: "refresh-page" });
@@ -18,34 +16,6 @@
 			value: $displayUrl,
 		});
 	}
-
-	function checkServerResponse(response) {
-		if (!response.success) {
-			catchServerError("Failed. " + response.result);
-		} else {
-			messageExtension({ type: "refresh-page" });
-			waitingOnServer = false;
-		}
-	}
-
-	function catchServerError(error) {
-		alert(error);
-		waitingOnServer = false;
-	}
-
-	function unlockCurrent() {
-		waitingOnServer = true;
-		unlock($displayUrl, $student.username, $config)
-			.then(checkServerResponse)
-			.catch(catchServerError);
-	}
-
-	function lockCurrent() {
-		waitingOnServer = true;
-		lock($displayUrl, $student.username, $config)
-			.then(checkServerResponse)
-			.catch(catchServerError);
-	}
 </script>
 
 <div class="browser">
@@ -53,10 +23,7 @@
 		<a href={$displayUrl} class="location" target="_blank">
 			{$displayUrl}<span>ignore</span>
 		</a>
-		<button on:click={unlockCurrent} disabled={waitingOnServer}>
-			Unlock
-		</button>
-		<button on:click={lockCurrent} disabled={waitingOnServer}>Lock</button>
+		<UnlockLock />
 		<button on:click={clearCookies}>Clear cookies</button>
 		<button on:click={refreshEmbed}>Refresh</button>
 	</div>
@@ -80,6 +47,7 @@
 		margin-bottom: 0.5em;
 		display: flex;
 		align-items: center;
+		position: relative;
 	}
 
 	.location {
@@ -96,7 +64,7 @@
 		user-select: none;
 	}
 
-	button {
+	:global(.browser button) {
 		margin: 0 0 0 5px;
 	}
 

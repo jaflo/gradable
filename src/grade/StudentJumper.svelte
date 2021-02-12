@@ -13,6 +13,7 @@
 	function jump() {
 		const previous = findCompletedEntry(selected, $homework);
 
+		// if we had already graded them
 		if (previous) {
 			$student = previous;
 			$homework.students = $homework.students.filter(
@@ -43,7 +44,7 @@
 			</option>
 		{/each}
 	</select>
-	<button on:click={jump}>Discard current and jump</button>
+	<button on:click={jump}>Jump</button>
 </div>
 
 <style>
