@@ -27,13 +27,6 @@
 
 <svelte:window on:keydown={handleKeydown} />
 
-<svelte:head>
-	<title
-		>Grading student {$homework.students.length + 1} of {$config.students
-			.length} | Gradable
-	</title>
-</svelte:head>
-
 <div class="browser">
 	<div class="top">
 		<a href={$displayUrl} class="location" target="_blank">

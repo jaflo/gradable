@@ -18,6 +18,8 @@
 		details: string;
 	}
 
+	let prefix = $homework.prefix;
+
 	let requests: LockRequest[] = [];
 	let lockedCurrentStudent = false;
 	let showDetails = false;
@@ -54,7 +56,7 @@
 		wantsLock: boolean,
 		callback?: Function
 	) {
-		const url = `${$homework.prefix}/${username}/`;
+		const url = `${prefix}/${username}/`;
 
 		const request: LockRequest = {
 			username,
