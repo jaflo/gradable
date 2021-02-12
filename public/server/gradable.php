@@ -28,7 +28,7 @@ if (!is_file($token_file)) {
 		echo $token;
 	} else {
 		echo "<h1>Permission issue</h1>";
-		echo "Token could not be saved. You might need to <code>chmod 700 ~/public_html</code> ";
+		echo "Token could not be saved. You might need to <code>chmod 755 ~/public_html</code> ";
 		echo "<a href=''>retry</a>";
 	}
 

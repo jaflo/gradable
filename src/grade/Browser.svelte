@@ -1,7 +1,7 @@
 <script lang="ts">
 	import UnlockLock from "./UnlockLock.svelte";
 	import { messageExtension } from "../helpers";
-	import { displayUrl } from "../stores";
+	import { config, displayUrl, homework } from "../stores";
 
 	export let embeddedUrl = "about:blank";
 	export let iframeRef;
@@ -16,7 +16,23 @@
 			value: $displayUrl,
 		});
 	}
+
+	function handleKeydown(event) {
+		if (event.keyCode === 82 && event.ctrlKey) {
+			refreshEmbed();
+			event.preventDefault();
+		}
+	}
 </script>
+
+<svelte:window on:keydown={handleKeydown} />
+
+<svelte:head>
+	<title
+		>Grading student {$homework.students.length + 1} of {$config.students
+			.length} | Gradable
+	</title>
+</svelte:head>
 
 <div class="browser">
 	<div class="top">

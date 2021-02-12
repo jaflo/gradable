@@ -82,7 +82,6 @@
 			{/if}
 		</button>
 
-		<StudentJumper />
 		<Requests />
 	</div>
 

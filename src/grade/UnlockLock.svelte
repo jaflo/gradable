@@ -20,8 +20,9 @@
 
 	let requests: LockRequest[] = [];
 	let lockedCurrentStudent = false;
-	let waitingOnServer = false;
 	let showDetails = false;
+	let unseenError = false;
+	let aggregateStatus = RequestStatus.Success;
 
 	let prevUsername = null;
 	$: if (prevUsername !== $student.username) {
@@ -67,6 +68,7 @@
 		(wantsLock ? lock : unlock)(url, username, $config)
 			.then((response) => {
 				if (!response.success) {
+					unseenError = true;
 					request.status = RequestStatus.Failed;
 					request.details = response.result;
 				} else {
@@ -76,6 +78,7 @@
 				requests = requests.slice(0, 5);
 			})
 			.catch((error) => {
+				unseenError = true;
 				request.status = RequestStatus.Failed;
 				request.details = error;
 				requests = requests.slice(0, 5);
@@ -104,33 +107,35 @@
 
 	function unlockCurrent() {
 		queueRequest($student.username, false /* unlock */, () => {
-			waitingOnServer = true;
 			messageExtension({ type: "refresh-page" });
 		});
 	}
 
 	function lockCurrent() {
 		queueRequest($student.username, true /* lock */, () => {
-			waitingOnServer = true;
 			messageExtension({ type: "refresh-page" });
 		});
 	}
 
-	let aggregateStatus = RequestStatus.Success;
 	$: {
-		if (requests.find((r) => r.status === RequestStatus.Failed)) {
-			aggregateStatus = RequestStatus.Failed;
-		} else if (requests.find((r) => r.status === RequestStatus.Pending)) {
+		if (requests.find((r) => r.status === RequestStatus.Pending)) {
 			aggregateStatus = RequestStatus.Pending;
+		} else if (unseenError) {
+			aggregateStatus = RequestStatus.Failed;
 		} else {
 			aggregateStatus = RequestStatus.Success;
 		}
+	}
+
+	function toggleDetails() {
+		showDetails = !showDetails;
+		unseenError = false;
 	}
 </script>
 
 <svelte:window on:beforeunload={beforeUnload} />
 
-<button on:click={() => (showDetails = !showDetails)} class="entry">
+<button on:click={toggleDetails} class="entry">
 	{#if aggregateStatus === RequestStatus.Pending}
 		⌛
 	{:else if aggregateStatus === RequestStatus.Success}
@@ -146,12 +151,8 @@
 			<div>
 				{$student.username}
 			</div>
-			<button on:click={unlockCurrent} disabled={waitingOnServer}>
-				Unlock
-			</button>
-			<button on:click={lockCurrent} disabled={waitingOnServer}>
-				Lock
-			</button>
+			<button on:click={unlockCurrent}>Unlock</button>
+			<button on:click={lockCurrent}>Lock</button>
 		</div>
 
 		<small>

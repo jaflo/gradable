@@ -37,7 +37,8 @@
 unzip 2.0.30.zip
 mv phpseclib-2.0.30/phpseclib phpseclib
 rm -rf phpseclib-2.0.30
-rm 2.0.30.zip`
+rm 2.0.30.zip
+chmod -R 755 phpseclib`
 		.split("\n")
 		.join(" && ");
 </script>

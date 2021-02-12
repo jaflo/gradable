@@ -70,6 +70,34 @@
 	/>.cs.utexas.edu/<input type="text" bind:value={folder} readonly />
 </div>
 
+The recommended workflow is as follows:
+
+<ol>
+	<li>
+		Wait for the student's directory to be unlocked (use the refresh button
+		to check)
+	</li>
+	<li>Grade the student shown (chosen randomly)</li>
+	<li>
+		Click the next student button to the next student randomly
+		<ol>
+			<li>
+				This should load faster because gradable already unlocked the
+				folder in the background
+			</li>
+			<li>
+				Sometimes stuff goes wrong and you will see an ❌, click it to
+				see what happened
+			</li>
+		</ol>
+	</li>
+	<li>
+		Once you are done, you will get a table of students, copy everything
+		into Canvas
+	</li>
+	<li>You're done!</li>
+</ol>
+
 <button
 	disabled={!homeworkNumber || !dueDate || !folder}
 	on:click={startGrading}>Start grading</button

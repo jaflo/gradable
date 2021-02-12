@@ -67,10 +67,11 @@
 		];
 	}
 
-	function regrade(i) {
-		$student = $homework.students[i];
-		$homework.students.splice(i, 1);
-		$homework = $homework;
+	function regrade(selectedStudent: Student) {
+		$student = selectedStudent;
+		$homework.students = $homework.students.filter(
+			(student) => student.username !== selectedStudent.username
+		);
 	}
 
 	function formatComments(commentIds, separator) {
@@ -125,7 +126,7 @@
 				<td>
 					<button
 						on:click={() => {
-							regrade(i);
+							regrade(student);
 						}}>regrade</button
 					>
 				</td>
