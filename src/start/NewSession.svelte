@@ -86,8 +86,8 @@ The recommended workflow is as follows:
 				folder in the background
 			</li>
 			<li>
-				Sometimes stuff goes wrong and you will see an ❌, click it to
-				see what happened
+				Sometimes stuff goes wrong, click the ❌ in the top right to see
+				what happened
 			</li>
 		</ul>
 	</li>

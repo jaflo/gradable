@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { student, homework, config } from "../stores";
+	import { student, homework, config, failedUnlocks } from "../stores";
 	import { lock, unlock } from "../data/server";
 	import { getNextStudentId } from "../data/homework";
 	import { onDestroy } from "svelte";
-	import { messageExtension } from "../helpers";
+
+	const MAX_HISTORY = 5;
 
 	enum RequestStatus {
 		Pending,
@@ -73,17 +74,19 @@
 					unseenError = true;
 					request.status = RequestStatus.Failed;
 					request.details = response.result;
+					$failedUnlocks[username] = request.details;
 				} else {
 					request.status = RequestStatus.Success;
 					if (callback) callback();
 				}
-				requests = requests.slice(0, 5);
+				requests = requests.slice(0, MAX_HISTORY);
 			})
 			.catch((error) => {
 				unseenError = true;
 				request.status = RequestStatus.Failed;
 				request.details = error;
-				requests = requests.slice(0, 5);
+				requests = requests.slice(0, MAX_HISTORY);
+				$failedUnlocks[username] = request.details;
 			});
 	}
 
@@ -108,15 +111,11 @@
 	}
 
 	function unlockCurrent() {
-		queueRequest($student.username, false /* unlock */, () => {
-			messageExtension({ type: "refresh-page" });
-		});
+		queueRequest($student.username, false /* unlock */);
 	}
 
 	function lockCurrent() {
-		queueRequest($student.username, true /* lock */, () => {
-			messageExtension({ type: "refresh-page" });
-		});
+		queueRequest($student.username, true /* lock */);
 	}
 
 	$: {
@@ -164,8 +163,8 @@
 		</small>
 
 		<div class="requests">
-			{#each requests as { username, lock, status, details }}
-				<div>
+			{#each requests as { username, lock, status, details }, i}
+				<div style="opacity:{(MAX_HISTORY - i) / MAX_HISTORY}">
 					<div class="split">
 						<div>{username} ({lock ? "lock" : "unlock"})</div>
 						{#if status === RequestStatus.Pending}
@@ -203,6 +202,7 @@
 		box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 		border: 1px solid rgba(0, 0, 0, 0.1);
 		border-radius: 4px;
+		z-index: 5;
 	}
 
 	.actions {

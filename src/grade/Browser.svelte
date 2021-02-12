@@ -1,7 +1,12 @@
 <script lang="ts">
 	import UnlockLock from "./UnlockLock.svelte";
 	import { messageExtension } from "../helpers";
-	import { config, displayUrl, homework } from "../stores";
+	import {
+		collectedRequests,
+		displayUrl,
+		failedUnlocks,
+		student,
+	} from "../stores";
 
 	export let embeddedUrl = "about:blank";
 	export let iframeRef;
@@ -23,6 +28,19 @@
 			event.preventDefault();
 		}
 	}
+
+	let waitingOnUnlock = true;
+	$: if ($collectedRequests[0]) {
+		if ($collectedRequests[0].statusCode === 403) {
+			waitingOnUnlock = true;
+			setTimeout(refreshEmbed, 1000);
+		} else {
+			waitingOnUnlock = false;
+		}
+	}
+
+	$: failedReason = $failedUnlocks[$student.username];
+	$: console.log($failedUnlocks, $student.username, failedReason);
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -36,12 +54,27 @@
 		<button on:click={clearCookies}>Clear cookies</button>
 		<button on:click={refreshEmbed}>Refresh</button>
 	</div>
-	<iframe
-		src={embeddedUrl}
-		frameborder="0"
-		title="Embedded website to grade"
-		bind:this={iframeRef}
-	/>
+	<div class="main">
+		{#if failedReason !== undefined}
+			<div class="message">
+				<h3>Failed to load</h3>
+				You might need to manually SSH in to investigate.
+				<pre>{failedReason}</pre>
+			</div>
+		{:else if waitingOnUnlock}
+			<div class="waiting message">
+				<h3>Waiting on unlock</h3>
+				This shouldn't take longer than five minutes.
+			</div>
+		{/if}
+		<iframe
+			src={embeddedUrl}
+			frameborder="0"
+			title="Embedded website to grade"
+			class:faded={failedReason !== undefined || waitingOnUnlock}
+			bind:this={iframeRef}
+		/>
+	</div>
 </div>
 
 <style>
@@ -77,9 +110,43 @@
 		margin: 0 0 0 5px;
 	}
 
-	iframe {
+	.main {
 		flex: 1;
 		background: white;
 		box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+		position: relative;
+	}
+
+	iframe {
+		width: 100%;
+		height: 100%;
+	}
+
+	.faded {
+		opacity: 0.5;
+	}
+
+	@keyframes fade {
+		to {
+			opacity: 0.3;
+		}
+	}
+
+	.message {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 380px;
+		text-align: center;
+	}
+
+	.waiting {
+		animation: fade 1s ease-in-out infinite alternate;
+	}
+
+	pre {
+		text-align: left;
+		overflow-x: auto;
 	}
 </style>
