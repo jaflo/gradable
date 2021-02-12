@@ -16,7 +16,11 @@ function attachRequestListener() {
 	});
 }
 
-browser.tabs.onRemoved.addListener(detachEventListener);
+browser.tabs.onRemoved.addListener((removedTabId) => {
+	if (removedTabId === tabId) {
+		detachEventListener();
+	}
+});
 
 function handleRequest(details) {
 	const { statusCode, url, method, responseSize } = details;
