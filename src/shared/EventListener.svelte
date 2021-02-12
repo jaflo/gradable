@@ -38,7 +38,7 @@
 				getModificationTimes($displayUrl, basePath, $config)
 					.then((files) => {
 						files.forEach(({ name, time }) => {
-							$fileModificationTimes[name] = time;
+							$fileModificationTimes[encodeURI(name)] = time;
 						});
 						$fileModificationTimes = $fileModificationTimes;
 					})

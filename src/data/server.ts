@@ -94,6 +94,12 @@ export function getModificationTimes(url, basePath, config: ConfigOptions) {
 			response.result
 				.split("\n")
 				.map((entry) => entry.split(" "))
+				.map((pieces) => {
+					const time = pieces.shift();
+					const name = pieces.join(" ");
+
+					return [time, name];
+				})
 				.map(([time, name]) => ({
 					name: basePath + name.replace("./", "/"),
 					time: new Date(parseFloat(time) * 1000),

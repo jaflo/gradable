@@ -17,7 +17,10 @@
 		{students.length}
 		{students.length === 1 ? "student" : "students"}
 	</h2>
-	<p>Each row should have the username and password separated by a tab.</p>
+	<p>
+		Each row should have the name, username, and password separated by a
+		tab.
+	</p>
 
 	<textarea bind:value={studentsRaw} rows="1" />
 

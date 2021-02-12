@@ -90,6 +90,12 @@
 				() => (lockedCurrentStudent = true)
 			);
 
+			const nextStudentId =
+				$student && getNextStudentId($student.username);
+			if (nextStudentId) {
+				queueRequest(nextStudentId, true /* lock */);
+			}
+
 			event.preventDefault();
 			event.returnValue = "";
 			return "Locking current student's assignment... You can probably close this tab.";
