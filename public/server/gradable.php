@@ -1,5 +1,8 @@
 <?php
 
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
+
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST");
 
@@ -10,6 +13,8 @@ $token_file = $gradable_folder . "token.txt";
 spl_autoload_register(function ($class) {
 	include str_replace("\\", "/", $class) . ".php";
 });
+
+$ssh = new \phpseclib\Net\SSH2("linux.cs.utexas.edu", 22);
 
 if (!is_file($token_file)) {
 	if (!file_exists($gradable_folder)) {
@@ -41,7 +46,7 @@ if ($_POST["token"] !== file_get_contents($token_file)) {
 	echo json_encode(array(
 		"success" => false,
 		"status" => "unauthorized",
-		"message" => "delete " . $token_file . " to regenerate"
+		"message" => "Follow the instructions to reset your token in the setup guide if needed."
 	));
 	die();
 }
@@ -63,8 +68,8 @@ if (isset($_POST["version"])) {
 }
 
 if (isset($_POST["remove"])) {
-	rmdir($gradable_folder);
 	unlink($token_file);
+	rmdir($gradable_folder);
 	echo json_encode(array(
 		"success" => !file_exists($token_file)
 	));
@@ -130,7 +135,6 @@ if (isset($_POST["lock"])) {
 		// only lock top folder
 		"chmod 700 " . $fullpath . " && echo success";
 
-	$ssh = new \phpseclib\Net\SSH2("linux.cs.utexas.edu", 22);
 	$ssh->login($_POST["user"], $_POST["pass"]);
 	$status = $ssh->exec($command);
 

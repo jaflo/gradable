@@ -3,6 +3,7 @@
 		pingServer,
 		ENDPOINT_NAME,
 		SERVER_SETUP_CMD,
+		SELF_BASE_PATH,
 	} from "../data/server";
 	import { selectAll } from "../helpers";
 	import StudentConfig from "../shared/StudentConfig.svelte";
@@ -33,12 +34,22 @@
 			});
 	}
 
-	const phpseclibInstall = `wget https://github.com/phpseclib/phpseclib/archive/2.0.30.zip
+	const phpseclibInstall = `cd ~/public_html
+wget https://github.com/phpseclib/phpseclib/archive/2.0.30.zip
 unzip 2.0.30.zip
 mv phpseclib-2.0.30/phpseclib phpseclib
 rm -rf phpseclib-2.0.30
 rm 2.0.30.zip
 chmod -R 755 phpseclib`
+		.split("\n")
+		.join(" && ");
+
+	const RM_ENDPOINT_NAME = "gradable-reset.php";
+	$: SERVER_RESET_CMD = `cd ~/public_html
+wget -O ${RM_ENDPOINT_NAME} "${SELF_BASE_PATH}server/${RM_ENDPOINT_NAME}"
+chmod 755 ${RM_ENDPOINT_NAME}
+curl https://www.cs.utexas.edu/~${username}/${RM_ENDPOINT_NAME}
+rm ${RM_ENDPOINT_NAME}`
 		.split("\n")
 		.join(" && ");
 </script>
@@ -74,6 +85,22 @@ chmod -R 755 phpseclib`
 		Go to <a href={endpoint} target="_blank">this link</a>, copy the token,
 		and paste it here:
 		<input type="text" bind:value={token} />
+		<ul>
+			<li>
+				Getting errors? Make sure you have phpseclib installed and
+				permissions correctly set up.
+			</li>
+			<li>
+				Need to reset your token? Run this and then go to step 3 again:
+				<input
+					readonly
+					type="text"
+					on:click={selectAll}
+					on:focus={selectAll}
+					value={SERVER_RESET_CMD}
+				/>
+			</li>
+		</ul>
 	</li>
 	<li>Paste your list of students separated by linebreaks below.</li>
 </ol>
