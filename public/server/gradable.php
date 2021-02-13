@@ -6,7 +6,7 @@ ini_set("display_errors", 1);
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST");
 
-$SERVER_VERSION = 3; // match with MIN_SERVER_VERSION in server.ts
+$SERVER_VERSION = 4; // match with MIN_SERVER_VERSION in server.ts
 $gradable_folder = "./gradable/";
 $token_file = $gradable_folder . "token.txt";
 
@@ -68,10 +68,13 @@ if (isset($_POST["version"])) {
 }
 
 if (isset($_POST["remove"])) {
-	unlink($token_file);
+	foreach (glob($gradable_folder . '/{,.}*', GLOB_BRACE) as $file) {
+		unlink($file);
+	}
 	rmdir($gradable_folder);
+
 	echo json_encode(array(
-		"success" => !file_exists($token_file)
+		"success" => !file_exists($gradable_folder)
 	));
 	die();
 }
