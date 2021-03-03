@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { calculateScore, getName, selectAll } from "../helpers";
-	import { student, homework, checkpoints, config } from "../stores";
+	import {
+		student,
+		homework,
+		checkpoints,
+		config,
+		collectedRequests,
+	} from "../stores";
 
 	interface NamedStudent extends Student {
 		realname: string;
@@ -72,12 +78,21 @@
 		$homework.students = $homework.students.filter(
 			(student) => student.username !== selectedStudent.username
 		);
+		$collectedRequests = [];
 	}
 
 	function formatComments(commentIds, separator) {
 		return commentIds
 			.map((commentId) => $homework.possibleComments[commentId])
-			.map(({ points, text }) => `-${points}: ${text}`)
+			.map(({ points, text }) => {
+				if (points === 100) {
+					return text;
+				} else if (points === 0) {
+					return `Note: ${text}`;
+				} else {
+					return `-${points}: ${text}`;
+				}
+			})
 			.join(separator);
 	}
 </script>

@@ -26,22 +26,36 @@
 	let showDetails = false;
 	let unseenError = false;
 	let aggregateStatus = RequestStatus.Success;
+	let inflightBeforeUnloadPending = false;
 
 	let prevUsername = null;
-	$: if (prevUsername !== $student.username) {
+
+	function unlockLockWhereNeeded() {
+		let pendingRequests = [];
+
 		if (prevUsername) {
-			queueRequest(prevUsername, true /* lock */);
+			pendingRequests.push(queueRequest(prevUsername, true /* lock */));
 		} else if ($student) {
 			// we just started grading
-			queueRequest($student.username, false /* unlock */);
+			pendingRequests.push(
+				queueRequest($student.username, false /* unlock */)
+			);
 		}
 
 		const nextStudentId = $student && getNextStudentId($student.username);
 		if (nextStudentId) {
-			queueRequest(nextStudentId, false /* unlock */);
+			pendingRequests.push(
+				queueRequest(nextStudentId, false /* unlock */)
+			);
 		}
 
 		lockedCurrentStudent = false;
+
+		return Promise.all(pendingRequests);
+	}
+
+	$: if (prevUsername !== $student.username) {
+		unlockLockWhereNeeded();
 		prevUsername = $student.username;
 	}
 
@@ -52,11 +66,7 @@
 		}
 	});
 
-	function queueRequest(
-		username: string,
-		wantsLock: boolean,
-		callback?: Function
-	) {
+	function queueRequest(username: string, wantsLock: boolean) {
 		const url = `${prefix}/${username}/`;
 
 		const request: LockRequest = {
@@ -68,46 +78,58 @@
 
 		requests = [request, ...requests];
 
-		(wantsLock ? lock : unlock)(url, username, $config)
-			.then((response) => {
-				if (!response.success) {
+		return new Promise<void>((resolve, reject) => {
+			(wantsLock ? lock : unlock)(url, username, $config)
+				.then((response) => {
+					if (!response.success) {
+						unseenError = true;
+						request.status = RequestStatus.Failed;
+						request.details = response.result;
+						$failedUnlocks[username] = request.details;
+					} else {
+						request.status = RequestStatus.Success;
+						resolve();
+					}
+					requests = requests.slice(0, MAX_HISTORY);
+				})
+				.catch((error) => {
 					unseenError = true;
 					request.status = RequestStatus.Failed;
-					request.details = response.result;
+					request.details = error;
+					requests = requests.slice(0, MAX_HISTORY);
 					$failedUnlocks[username] = request.details;
-				} else {
-					request.status = RequestStatus.Success;
-					if (callback) callback();
-				}
-				requests = requests.slice(0, MAX_HISTORY);
-			})
-			.catch((error) => {
-				unseenError = true;
-				request.status = RequestStatus.Failed;
-				request.details = error;
-				requests = requests.slice(0, MAX_HISTORY);
-				$failedUnlocks[username] = request.details;
-			});
+
+					reject(error);
+				});
+		});
 	}
 
 	function beforeUnload(event) {
 		if (!lockedCurrentStudent) {
-			queueRequest(
-				$student.username,
-				true /* lock */,
-				() => (lockedCurrentStudent = true)
-			);
+			event.preventDefault();
+			event.returnValue = "";
+			inflightBeforeUnloadPending = true;
+
+			let exitRequests = [];
+			exitRequests.push(queueRequest($student.username, true /* lock */));
 
 			const nextStudentId =
 				$student && getNextStudentId($student.username);
 			if (nextStudentId) {
-				queueRequest(nextStudentId, true /* lock */);
+				exitRequests.push(queueRequest(nextStudentId, true /* lock */));
 			}
 
-			event.preventDefault();
-			event.returnValue = "";
+			Promise.all(exitRequests).then(() => {
+				lockedCurrentStudent = true;
+			});
+
 			return "Locking current student's assignment... You can probably close this tab.";
 		}
+	}
+
+	function resumeFromCancelledUnload() {
+		unlockLockWhereNeeded();
+		inflightBeforeUnloadPending = false;
 	}
 
 	function unlockCurrent() {
@@ -146,7 +168,7 @@
 	{/if}
 </button>
 
-{#if showDetails}
+{#if showDetails || inflightBeforeUnloadPending}
 	<div class="details">
 		<div class="split actions">
 			<div>
@@ -184,11 +206,58 @@
 	</div>
 {/if}
 
+{#if inflightBeforeUnloadPending}
+	<div
+		class="unloadwarning"
+		class:pending={!lockedCurrentStudent}
+		on:click|once={resumeFromCancelledUnload}
+	>
+		<div>
+			<h3>
+				{#if !lockedCurrentStudent}
+					One moment...
+				{:else}
+					You can safely close this tab
+				{/if}
+			</h3>
+
+			{#if !lockedCurrentStudent}
+				Since some folders were unlocked to grade, we need to grade them
+				again before closing this session. A request has been sent.
+			{:else}
+				Cancel and click anywhere to resume grading.
+			{/if}
+		</div>
+	</div>
+{/if}
+
 <style>
 	.entry {
 		margin: 0;
 		background: none;
 		border: 0;
+	}
+
+	.unloadwarning {
+		position: fixed;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		z-index: 5;
+		padding: var(--default-pad);
+		background: var(--background);
+	}
+
+	.pending {
+		background: var(--attention);
+	}
+
+	.unloadwarning div {
+		margin-top: calc(var(--default-pad) * 3);
+		margin-right: 300px;
+		padding-right: calc(var(--default-pad) * 5);
+		text-align: right;
 	}
 
 	.details {
@@ -202,7 +271,7 @@
 		box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 		border: 1px solid rgba(0, 0, 0, 0.1);
 		border-radius: 4px;
-		z-index: 5;
+		z-index: 10;
 	}
 
 	.actions {

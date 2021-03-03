@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { loadNextStudent } from "../data/homework";
 	import { messageExtension, calculateScore } from "../helpers";
 	import {
 		student,
@@ -11,8 +10,8 @@
 	} from "../stores";
 	import Browser from "./Browser.svelte";
 	import Comments from "./Comments.svelte";
+	import Navigation from "./Navigation.svelte";
 	import Requests from "./Requests.svelte";
-	import StudentJumper from "./StudentJumper.svelte";
 
 	$: score = calculateScore($student.commentIds, $homework.possibleComments);
 	$: embeddedUrl = `${$homework.prefix}/${$student.username}/`;
@@ -26,12 +25,6 @@
 	}
 
 	let iframeRef;
-
-	function continueWithNextStudent() {
-		messageExtension({ type: "clear-cookies" });
-		$homework.students = [...$homework.students, $student];
-		loadNextStudent();
-	}
 
 	function resetAndRegrade() {
 		messageExtension({ type: "clear-cookies", value: $displayUrl });
@@ -73,15 +66,7 @@
 		</h2>
 
 		<Comments />
-
-		<button on:click={continueWithNextStudent} class="next">
-			{#if score === 100}
-				Mark as perfect and continue
-			{:else}
-				Mark as {score}% and continue
-			{/if}
-		</button>
-
+		<Navigation />
 		<Requests />
 	</div>
 

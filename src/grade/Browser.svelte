@@ -40,7 +40,6 @@
 	}
 
 	$: failedReason = $failedUnlocks[$student.username];
-	$: console.log($failedUnlocks, $student.username, failedReason);
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
