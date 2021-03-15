@@ -45,6 +45,7 @@ chmod -R 755 phpseclib`
 		.join(" && ");
 
 	const RM_ENDPOINT_NAME = "gradable-reset.php";
+	// Below duplicated from App.svelte
 	$: SERVER_RESET_CMD = `cd ~/public_html
 wget -O ${RM_ENDPOINT_NAME} "${SELF_BASE_PATH}server/${RM_ENDPOINT_NAME}"
 chmod 755 ${RM_ENDPOINT_NAME}

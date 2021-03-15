@@ -4,6 +4,7 @@
 	import { checkpoints, config } from "../stores";
 	import { removeServerConfig } from "../data/server";
 	import StudentConfig from "../shared/StudentConfig.svelte";
+	import { resetLocalStorage } from "../data/configData";
 
 	function resetServer() {
 		removeServerConfig($config).then(({ success }) => {
@@ -16,17 +17,7 @@
 	}
 
 	function resetEverything() {
-		if (
-			confirm(
-				"You are about to DELETE EVERYTHING, including your authentication token and " +
-					$checkpoints.length +
-					" checkpoints. Make sure to delete the server config if you do not have a backup of the token. " +
-					"Are you sure you want to continue?"
-			)
-		) {
-			localStorage.clear();
-			window.location = window.location;
-		}
+		resetLocalStorage($checkpoints.length);
 	}
 </script>
 

@@ -70,7 +70,9 @@ export function checkServerVersion(config: ConfigOptions) {
 		.then((response) => response.json())
 		.then((response) => {
 			if (!response.success) {
-				throw new Error("Failed connection to server script.");
+				throw new Error(
+					response.status || response.message || "Server error"
+				);
 			} else if (response.version < MIN_SERVER_VERSION) {
 				return false;
 			} else {
