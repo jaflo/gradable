@@ -6,7 +6,6 @@
 		fileModificationTimes,
 		homework,
 	} from "../stores";
-	import shuffle from "shuffle-array";
 
 	let homeworkNumber = "";
 	let dueDate = "";

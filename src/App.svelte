@@ -68,7 +68,7 @@
 
 	const RM_ENDPOINT_NAME = "gradable-reset.php";
 	// Below duplicated from FirstRun.svelte
-	$: SERVER_RESET_CMD = `cd ~/public_html
+	$: SERVER_RESET_CMD = $config && `cd ~/public_html
 wget -O ${RM_ENDPOINT_NAME} "${SELF_BASE_PATH}server/${RM_ENDPOINT_NAME}"
 chmod 755 ${RM_ENDPOINT_NAME}
 curl ${$config.endpoint.replace("gradable.php", RM_ENDPOINT_NAME)}

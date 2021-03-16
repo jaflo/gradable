@@ -108,12 +108,6 @@
 		background: var(--background);
 	}
 
-	.next {
-		background: var(--text-color);
-		color: var(--background);
-		margin-right: 0;
-	}
-
 	.progress {
 		position: absolute;
 		top: 0;
