@@ -6,7 +6,7 @@ ini_set("display_errors", 1);
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST");
 
-$SERVER_VERSION = 4; // match with MIN_SERVER_VERSION in server.ts
+$SERVER_VERSION = 5; // match with MIN_SERVER_VERSION in server.ts
 $gradable_folder = "./gradable/";
 $token_file = $gradable_folder . "token.txt";
 
@@ -132,10 +132,10 @@ if (isset($_POST["lock"])) {
 	$shouldunlock = $_POST["lock"] === "no";
 	$action = $shouldunlock ? "unlock" : "lock";
 	$command = $shouldunlock ?
-		// set all folders to 755 and files to 644
-		"(find " . $fullpath . " -type d -print0 | xargs -0 chmod 755) && (find " . $fullpath . " -type f -print0 | xargs -0 chmod 644) && echo success"
+		// unlock top folder
+		"chmod 755 " . $fullpath . " && echo success"
 		:
-		// only lock top folder
+		// lock top folder
 		"chmod 700 " . $fullpath . " && echo success";
 
 	$ssh->login($_POST["user"], $_POST["pass"]);
