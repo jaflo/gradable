@@ -59,9 +59,11 @@
 	let previewShown = false;
 
 	function preparePreview(fullUrl, shortUrl) {
-		getFileContent(fullUrl, shortUrl, $config).then((content) => {
-			previewContent = content;
-		});
+		getFileContent(fullUrl, shortUrl.split("?")[0], $config).then(
+			(content) => {
+				previewContent = content;
+			}
+		);
 		previewShown = true;
 	}
 </script>
