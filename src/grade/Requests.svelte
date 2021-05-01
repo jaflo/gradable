@@ -1,10 +1,13 @@
 <script lang="ts">
+	import { getFileContent } from "../data/server";
 	import {
 		collectedRequests,
+		config,
 		fileModificationTimes,
 		homework,
 		student,
 	} from "../stores";
+	import FilePreview from "./FilePreview.svelte";
 
 	$: dueDate = new Date($homework.dueDate + " 23:59:59").getTime();
 	let latest = 0;
@@ -51,6 +54,16 @@
 	function clearRequests() {
 		$collectedRequests = [];
 	}
+
+	let previewContent = "";
+	let previewShown = false;
+
+	function preparePreview(fullUrl, shortUrl) {
+		getFileContent(fullUrl, shortUrl, $config).then((content) => {
+			previewContent = content;
+		});
+		previewShown = true;
+	}
 </script>
 
 <div class="summary" class:late={latest > 0}>
@@ -64,7 +77,14 @@
 <div class="wrap">
 	<table>
 		{#each requests as request}
-			<tr>
+			<tr
+				on:mouseenter={() => {
+					preparePreview(request.url, request.displayUrl);
+				}}
+				on:mouseleave={() => {
+					previewShown = false;
+				}}
+			>
 				<td>{request.statusCode}</td>
 				{#if request.lastModified}
 					<td>
@@ -90,6 +110,19 @@
 	</table>
 	<div class="fade" />
 </div>
+
+{#if previewShown && previewContent}
+	<div
+		on:mouseenter={() => {
+			previewShown = true;
+		}}
+		on:mouseleave={() => {
+			previewShown = false;
+		}}
+	>
+		<FilePreview content={previewContent} />
+	</div>
+{/if}
 
 <style>
 	.wrap {

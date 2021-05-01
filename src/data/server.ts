@@ -1,6 +1,6 @@
 export const ENDPOINT_NAME = "gradable.php";
 export const SELF_BASE_PATH = document.location.href;
-const MIN_SERVER_VERSION = 5; // match with $SERVER_VERSION in gradable.php
+const MIN_SERVER_VERSION = 6; // match with $SERVER_VERSION in gradable.php
 
 export const SERVER_SETUP_CMD = `cd ~/public_html && wget -O ${ENDPOINT_NAME} "${SELF_BASE_PATH}server/${ENDPOINT_NAME}" && chmod 755 ${ENDPOINT_NAME}`;
 
@@ -107,4 +107,19 @@ export function getModificationTimes(url, basePath, config: ConfigOptions) {
 					time: new Date(parseFloat(time) * 1000),
 				}))
 		);
+}
+
+export function getFileContent(url, filePath, config: ConfigOptions) {
+	const data = new URLSearchParams();
+	data.append("token", config.token);
+	data.append("cat", "yes");
+	data.append("url", url);
+	data.append("file", filePath);
+
+	return fetch(config.endpoint, {
+		method: "post",
+		body: data,
+	})
+		.then((response) => response.json())
+		.then((response) => response.result);
 }

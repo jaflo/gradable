@@ -58,7 +58,9 @@
 			<div class="message">
 				<h3>Failed to load</h3>
 				You might need to manually SSH in to investigate.
-				<pre>{failedReason}</pre>
+				{#if failedReason !== "undefined"}
+					<pre>{failedReason}</pre>
+				{/if}
 			</div>
 		{:else if waitingOnUnlock}
 			<div class="waiting message">
@@ -121,10 +123,6 @@
 		height: 100%;
 	}
 
-	.faded {
-		opacity: 0.5;
-	}
-
 	@keyframes fade {
 		to {
 			opacity: 0.3;
@@ -132,12 +130,14 @@
 	}
 
 	.message {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		width: 380px;
+		color: var(--background);
+		background: var(--attention);
 		text-align: center;
+		padding: 1em;
+	}
+
+	.message h3 {
+		margin: 0 0 0.5em 0;
 	}
 
 	.waiting {

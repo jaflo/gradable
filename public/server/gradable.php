@@ -6,7 +6,7 @@ ini_set("display_errors", 1);
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST");
 
-$SERVER_VERSION = 5; // match with MIN_SERVER_VERSION in server.ts
+$SERVER_VERSION = 6; // match with MIN_SERVER_VERSION in server.ts
 $gradable_folder = "./gradable/";
 $token_file = $gradable_folder . "token.txt";
 
@@ -155,6 +155,26 @@ if (isset($_POST["lock"])) {
 	echo json_encode(array(
 		"result" => join("\n", $status),
 		"path" => $fullpath
+	));
+} else if (isset($_POST["cat"])) {
+	$fullpath = get_path_from_url(false);
+	$filepath = $_POST["file"];
+	$resolved = realpath($fullpath . "/" . $filepath);
+
+	if (strpos($resolved, $fullpath) > 0) {
+		echo json_encode(array(
+			"result" => "bad path",
+			"success" => false
+		));
+		die();
+	}
+
+	$status = array();
+	exec("cat " . $resolved, $status);
+
+	echo json_encode(array(
+		"result" => join("\n", $status),
+		"path" => $resolved
 	));
 } else {
 	echo json_encode(array(
